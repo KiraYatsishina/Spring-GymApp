@@ -1,0 +1,5 @@
+1,John,Smith,John.Smith,password123,true,Personal Trainer
+2,Jane,Doe,Jane.Doe,password456,true,Strength Coach
+3,Bob,Brown,Bob.Brown,password789,true,Yoga Instructor
+4,Alice,Johnson,Alice.Johnson,password321,true,Group Fitness Trainer
+5,Charlie,Wilson,Charlie.Wilson,password654,true,CrossFit Coach
