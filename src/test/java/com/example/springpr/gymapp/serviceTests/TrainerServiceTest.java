@@ -38,7 +38,7 @@ public class TrainerServiceTest {
 
     @Test
     void createTrainerTest() {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
         trainerService.createTrainer(trainer);
@@ -49,7 +49,7 @@ public class TrainerServiceTest {
     @Test
     void getTrainerByIdTest() {
         Long trainerId = 1L;
-        Trainer expectedTrainer = new Trainer(trainerId, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer expectedTrainer = new Trainer(trainerId, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
         when(trainerDAO.getTrainerById(trainerId)).thenReturn(expectedTrainer);
@@ -70,12 +70,12 @@ public class TrainerServiceTest {
 
     @Test
     void updateTrainerTest() {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
 
         long count = 2L;
-        when(countHelper.countUser(trainer)).thenReturn(count);
+        when(countHelper.countUser(trainer.getFirstName(), trainer.getLastName())).thenReturn(count);
         trainerService.updateTrainer(1L, trainer);
 
         verify(trainerDAO, times(1)).updateTrainer(1L, trainer, count);
@@ -93,11 +93,11 @@ public class TrainerServiceTest {
     @Test
     void getAllTrainersTest() {
         List<Trainer> trainers = Arrays.asList(
-                new Trainer(1L, "John", "Smith", "John.Smith", "password123",
+                new Trainer(1L, "John", "Smith", 0L,
                         true, "Personal Trainer"),
-                new Trainer(2L, "Jane", "Doe", "Jane.Doe", "password456",
+                new Trainer(2L, "Jane", "Doe", 0L,
                         true, "Strength Coach"),
-                new Trainer(3L, "Bob", "Brown", "Bob.Brown", "password789",
+                new Trainer(3L, "Bob", "Brown", 0L,
                         true,"Yoga Instructor")
         );
 

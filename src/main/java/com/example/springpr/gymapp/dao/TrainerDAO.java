@@ -42,7 +42,7 @@ public class TrainerDAO {
         if(trainer.getPassword() != null) curTrainer.setPassword(trainer.getPassword());
         if(trainer.getIsActive() != curTrainer.getIsActive()) curTrainer.setIsActive(trainer.getIsActive());
         if(trainer.getTrainingType() != null) curTrainer.setTrainingType(trainer.getTrainingType());
-        curTrainer.setUsernameCountPassword(count);
+        curTrainer.setCountAndPassword(count);
 
         logger.info("Updated trainer: {}", curTrainer);
     }

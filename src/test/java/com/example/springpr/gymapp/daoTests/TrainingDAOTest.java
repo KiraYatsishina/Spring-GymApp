@@ -29,14 +29,14 @@ public class TrainingDAOTest {
         MockitoAnnotations.initMocks(this);
 
         traineeDAO = new TraineeDAO();
-        traineeDAO.createTrainee(new Trainee(1L, "John", "Doe", "John.Doe", "password1", true, null, null));
-        traineeDAO.createTrainee(new Trainee(2L, "John", "Doe", "John.Doe1", "password2", true, null, null));
-        traineeDAO.createTrainee(new Trainee(3L, "Alex", "Smith", "Alex.Smith", "password3", true, null, null));
+        traineeDAO.createTrainee(new Trainee(1L, "John", "Doe", 0L, true, null, null));
+        traineeDAO.createTrainee(new Trainee(2L, "John", "Doe", 1L, true, null, null));
+        traineeDAO.createTrainee(new Trainee(3L, "Alex", "Smith", 0L, true, null, null));
 
         trainerDAO = new TrainerDAO();
-        trainerDAO.createTrainer(new Trainer(1L, "Alex", "Smith", "Alex.Smith1", "password4", true, "Yoga"));
-        trainerDAO.createTrainer(new Trainer(2L, "Sam", "White", "Sam.White", "password5", true, "Pilates"));
-        trainerDAO.createTrainer(new Trainer(3L, "Sam", "White", "Sam.White1", "password6", true, "Strength"));
+        trainerDAO.createTrainer(new Trainer(1L, "Alex", "Smith", 1L, true, "Yoga"));
+        trainerDAO.createTrainer(new Trainer(2L, "Sam", "White", 0L, true, "Pilates"));
+        trainerDAO.createTrainer(new Trainer(3L, "Sam", "White", 1L, true, "Strength"));
 
         trainingDAO = new TrainingDAO(traineeDAO, trainerDAO);
     }

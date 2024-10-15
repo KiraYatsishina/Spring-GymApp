@@ -22,7 +22,7 @@ public class TraineeDAOTest {
 
     @Test
     void createTraineeTest() {
-        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina", "myPassword",
+        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         traineeDAO.createTrainee(trainee);
@@ -32,8 +32,8 @@ public class TraineeDAOTest {
         assertEquals(retrievedTrainee.getId(), trainee.getId());
         assertEquals(retrievedTrainee.getFirstName(), trainee.getFirstName());
         assertEquals(retrievedTrainee.getLastName(), trainee.getLastName());
-        assertEquals(retrievedTrainee.getUsername(), trainee.getUsername());
-        assertEquals(retrievedTrainee.getPassword(), trainee.getPassword());
+        assertEquals(retrievedTrainee.getUsername(), trainee.getFirstName() + "." + trainee.getLastName());
+        assertNotNull(retrievedTrainee.getPassword());
         assertEquals(retrievedTrainee.getIsActive(), trainee.getIsActive());
         assertEquals(retrievedTrainee.getDateOfBirth(), trainee.getDateOfBirth());
         assertEquals(retrievedTrainee.getAddress(), trainee.getAddress());
@@ -41,16 +41,16 @@ public class TraineeDAOTest {
 
     @Test
     void createTraineeWithExistingFirstnameLastnameTest() {
-        traineeDAO.createTrainee(new Trainee(1L, "John", "Doe", "John.Doe", "password1",
+        traineeDAO.createTrainee(new Trainee(1L, "John", "Doe", 0L,
                 true, LocalDate.of(1992, 1, 1), "New York"));
-        traineeDAO.createTrainee(new Trainee(2L, "John", "Doe", "John.Doe1", "password2",
+        traineeDAO.createTrainee(new Trainee(2L, "John", "Doe", 1L,
                 false, LocalDate.of(1962, 6, 1), "New York"));
-        traineeDAO.createTrainee(new Trainee(3L, "John", "Doe", "John.Doe2", "password3",
+        traineeDAO.createTrainee(new Trainee(3L, "John", "Doe", 2L,
                 true, LocalDate.of(1997, 1, 13), "New York"));
-        traineeDAO.createTrainee(new Trainee(4L, "Kira", "Yatsishina", "Kira.Yatsishina", "myPassword",
+        traineeDAO.createTrainee(new Trainee(4L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa"));
 
-        Trainee trainee = new Trainee(5L, "John", "Doe", "John.Doe3", null,
+        Trainee trainee = new Trainee(5L, "John", "Doe", 3L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         traineeDAO.createTrainee(trainee);
@@ -60,7 +60,8 @@ public class TraineeDAOTest {
         assertEquals(retrievedTrainee.getId(), trainee.getId());
         assertEquals(retrievedTrainee.getFirstName(), trainee.getFirstName());
         assertEquals(retrievedTrainee.getLastName(), trainee.getLastName());
-        assertEquals(retrievedTrainee.getUsername(), trainee.getUsername());
+        assertEquals(retrievedTrainee.getUsername(), trainee.getFirstName() + "." + trainee.getLastName() + 3);
+        assertNotNull(retrievedTrainee.getPassword());
         assertEquals(retrievedTrainee.getIsActive(), trainee.getIsActive());
         assertEquals(retrievedTrainee.getDateOfBirth(), trainee.getDateOfBirth());
         assertEquals(retrievedTrainee.getAddress(), trainee.getAddress());
@@ -68,7 +69,7 @@ public class TraineeDAOTest {
 
     @Test
     void getTraineeByIdTest() {
-        Trainee trainee = new Trainee(2L, "Emily", "Jones", "Emily.Jones", "password789",
+        Trainee trainee = new Trainee(2L, "Emily", "Jones", 0L,
                 false, LocalDate.of(1990, 5, 5), "Somewhere");
 
         traineeDAO.createTrainee(trainee);
@@ -78,8 +79,8 @@ public class TraineeDAOTest {
         assertEquals(retrievedTrainee.getId(), trainee.getId());
         assertEquals(retrievedTrainee.getFirstName(), trainee.getFirstName());
         assertEquals(retrievedTrainee.getLastName(), trainee.getLastName());
-        assertEquals(retrievedTrainee.getUsername(), trainee.getUsername());
-        assertEquals(retrievedTrainee.getPassword(), trainee.getPassword());
+        assertEquals(retrievedTrainee.getUsername(), trainee.getFirstName() + "." + trainee.getLastName());
+        assertNotNull(retrievedTrainee.getPassword());
         assertEquals(retrievedTrainee.getIsActive(), trainee.getIsActive());
         assertEquals(retrievedTrainee.getDateOfBirth(), trainee.getDateOfBirth());
         assertEquals(retrievedTrainee.getAddress(), trainee.getAddress());
@@ -93,9 +94,9 @@ public class TraineeDAOTest {
 
     @Test
     void updateTraineeTest() {
-        Trainee trainee = new Trainee(1L, "John", "Doe", "John.Doe", "password1",
+        Trainee trainee = new Trainee(1L, "John", "Doe", 0L,
                 true, LocalDate.of(1992, 1, 1), "New York");
-        Trainee updateTrainee = new Trainee(1L, "NEWJohn", "NEWDoe", null, "password2",
+        Trainee updateTrainee = new Trainee(1L, "NEWJohn", "NEWDoe", 0L,
                         false, LocalDate.of(1962, 6, 1), "Odesa");
 
         traineeDAO.createTrainee(trainee);
@@ -109,7 +110,7 @@ public class TraineeDAOTest {
         assertEquals(retrievedTrainee.getFirstName(), updateTrainee.getFirstName());
         assertEquals(retrievedTrainee.getLastName(), updateTrainee.getLastName());
         assertEquals(retrievedTrainee.getUsername(), "NEWJohn.NEWDoe");
-        assertEquals(retrievedTrainee.getPassword(), updateTrainee.getPassword());
+        assertEquals(retrievedTrainee.getPassword(), trainee.getPassword());
         assertEquals(retrievedTrainee.getIsActive(), updateTrainee.getIsActive());
         assertEquals(retrievedTrainee.getDateOfBirth(), updateTrainee.getDateOfBirth());
         assertEquals(retrievedTrainee.getAddress(), updateTrainee.getAddress());
@@ -117,14 +118,14 @@ public class TraineeDAOTest {
 
     @Test
     void updateTraineeWithExistingFirstnameLastnameTest() {
-        traineeDAO.createTrainee(new Trainee(1L, "John", "Doe", "John.Doe", "password123",
+        traineeDAO.createTrainee(new Trainee(1L, "John", "Doe", 0L,
                 true, LocalDate.of(1992, 1, 1), "New York"));
-        traineeDAO.createTrainee( new Trainee(2L, "John", "Doe", "John.Doe1", "password1",
+        traineeDAO.createTrainee( new Trainee(2L, "John", "Doe", 1L,
                 true, LocalDate.of(1992, 1, 1), "Odesa"));
-        traineeDAO.createTrainee(new Trainee(3L, "Jane", "Doe", "Jane.Doe", "password456",
+        traineeDAO.createTrainee(new Trainee(3L, "Jane", "Doe", 0L,
                 false, LocalDate.of(1993, 2, 2), "Los Angeles"));
 
-        Trainee updateTrainee = new Trainee(3L, "John", "Doe", null, "password4",
+        Trainee updateTrainee = new Trainee(3L, "John", "Doe", 2L,
                 true, LocalDate.of(1992, 1, 1), "New York");
 
         long count = 2;
@@ -136,16 +137,15 @@ public class TraineeDAOTest {
         assertEquals(retrievedTrainee.getFirstName(), updateTrainee.getFirstName());
         assertEquals(retrievedTrainee.getLastName(), updateTrainee.getLastName());
         assertEquals(retrievedTrainee.getUsername(), "John.Doe2");
-        assertEquals(retrievedTrainee.getPassword(), updateTrainee.getPassword());
+        assertNotNull(retrievedTrainee.getPassword());
         assertEquals(retrievedTrainee.getIsActive(), updateTrainee.getIsActive());
         assertEquals(retrievedTrainee.getDateOfBirth(), updateTrainee.getDateOfBirth());
         assertEquals(retrievedTrainee.getAddress(), updateTrainee.getAddress());
-
     }
 
     @Test
     void updateNonExistentTraineeTest() {
-        Trainee trainee = new Trainee(999L, "Non", "Existent", "non.existent", "nopass",
+        Trainee trainee = new Trainee(999L, "Non", "Existent", 0L,
                 true, LocalDate.of(1995, 4, 4), "nowhere");
 
         traineeDAO.updateTrainee(999L, trainee, 0); // message in loggs
@@ -153,7 +153,7 @@ public class TraineeDAOTest {
 
     @Test
     void deleteTraineeTest() {
-        Trainee trainee = new Trainee(4L, "Sarah", "Johnson", "Sarah.Johnson", "password102",
+        Trainee trainee = new Trainee(4L, "Sarah", "Johnson", 0L,
                 false, LocalDate.of(1993, 5, 5), "address2");
 
         traineeDAO.createTrainee(trainee);
@@ -171,9 +171,9 @@ public class TraineeDAOTest {
     @Test
     void getAllTraineesTest() {
         List<Trainee> expectedTrainees = Arrays.asList(
-                new Trainee(1L, "John", "Doe", "John.Doe", "password123",
+                new Trainee(1L, "John", "Doe", 0L,
                         true, LocalDate.of(1992, 1, 1), "New York"),
-                new Trainee(2L, "Jane", "Doe", "Jane.Doe", "password456",
+                new Trainee(2L, "Jane", "Doe", 0L,
                         false, LocalDate.of(1993, 2, 2), "Los Angeles")
         );
 

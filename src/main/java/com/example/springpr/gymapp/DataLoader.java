@@ -30,6 +30,8 @@ public class DataLoader {
     private TrainerDAO trainerDAO;
     @Autowired
     private TrainingDAO trainingDAO;
+    @Autowired
+    private CountHelper countHelper;
 
     private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
 
@@ -50,27 +52,26 @@ public class DataLoader {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                Trainee trainee = new Trainee();
-                trainee.setId(Long.valueOf(data[0]));
-                trainee.setFirstName(data[1]);
-                trainee.setLastName(data[2]);
-                trainee.setUsername(data[3]);
-                trainee.setPassword(data[4]);
-                trainee.setIsActive(Boolean.parseBoolean(data[5]));
 
+                long traineeId = Long.parseLong(data[0]);
+                String firstname = data[1];
+                String lastname = data[2];
+                boolean isActive = Boolean.parseBoolean(data[3]);
+
+                LocalDate birthDate = null;
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 try {
-                    LocalDate birthDate = LocalDate.parse(data[6], dateFormatter);
-                    trainee.setDateOfBirth(birthDate);
+                    birthDate = LocalDate.parse(data[4], dateFormatter);
                 } catch (DateTimeParseException e) {
-                    trainee.setDateOfBirth(null);
                     logger.error("Invalid date format for trainee ID {}: {}", data[0], e.getMessage());
                 }
                 catch (Exception e) {
                     logger.error("Failed to create trainee from line: {}", line, e);
                 }
-                trainee.setAddress(data[7]);
-                traineeDAO.createTrainee(trainee);
+
+                String address = data[5];
+                long count = countHelper.countUser(firstname, lastname);
+                traineeDAO.createTrainee(new Trainee(traineeId, firstname, lastname, count, isActive, birthDate, address));
             }
         }
     }
@@ -83,15 +84,14 @@ public class DataLoader {
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
                 try {
-                    Trainer trainer = new Trainer();
-                    trainer.setId(Long.valueOf(data[0]));
-                    trainer.setFirstName(data[1]);
-                    trainer.setLastName(data[2]);
-                    trainer.setUsername(data[3]);
-                    trainer.setPassword(data[4]);
-                    trainer.setIsActive(Boolean.parseBoolean(data[5]));
-                    trainer.setTrainingType(new TrainingType(data[6]));
-                    trainerDAO.createTrainer(trainer);
+                    long traineeId = Long.parseLong(data[0]);
+                    String firstname = data[1];
+                    String lastname = data[2];
+                    boolean isActive = Boolean.parseBoolean(data[3]);
+                    String trainingType = data[4];
+                    long count = countHelper.countUser(firstname, lastname);
+
+                    trainerDAO.createTrainer(new Trainer(traineeId, firstname, lastname, count, isActive, trainingType));
                 } catch (Exception e) {
                     logger.error("Failed to create trainer from line: {}", line, e);
                 }

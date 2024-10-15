@@ -17,8 +17,8 @@ public class TrainerService {
     private CountHelper countHelper;
 
     public void createTrainer(Trainer trainer) {
-        long count = countHelper.countUser(trainer);
-        trainer.setUsernameCountPassword(count);
+        long count = countHelper.countUser(trainer.getFirstName(), trainer.getLastName());
+        trainer.setCountAndPassword(count);
         trainerDAO.createTrainer(trainer);
     }
 
@@ -27,7 +27,7 @@ public class TrainerService {
     }
 
     public void updateTrainer(Long id, Trainer trainer) {
-        long count = countHelper.countUser(trainer);
+        long count = countHelper.countUser(trainer.getFirstName(), trainer.getLastName());
         trainerDAO.updateTrainer(id, trainer, count);
     }
 

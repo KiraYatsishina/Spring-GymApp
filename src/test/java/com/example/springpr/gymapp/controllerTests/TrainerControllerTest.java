@@ -46,7 +46,7 @@ public class TrainerControllerTest {
 
     @Test
     void createTrainerTest() throws Exception {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
         String trainerJson = objectMapper.writeValueAsString(trainer);
 
@@ -60,7 +60,7 @@ public class TrainerControllerTest {
 
     @Test
     void getTrainerByIdTest() throws Exception {
-        Trainer expectedTrainer = new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer expectedTrainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
         when(trainerController.getTrainer(1L)).thenReturn(expectedTrainer);
@@ -72,8 +72,7 @@ public class TrainerControllerTest {
                 .andExpect(jsonPath("$.firstName").value(expectedTrainer.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(expectedTrainer.getLastName()))
                 .andExpect(jsonPath("$.isActive").value(expectedTrainer.getIsActive()))
-                .andExpect(jsonPath("$.password").value(expectedTrainer.getPassword()))
-                .andExpect(jsonPath("$.username").value(expectedTrainer.getUsername()))
+                .andExpect(jsonPath("$.username").value(expectedTrainer.getFirstName() + "." + expectedTrainer.getLastName()))
                 .andExpect(jsonPath("$.trainingType.trainingTypeName").value(expectedTrainer.getTrainingType().getTrainingTypeName()));
 
         verify(trainerService, times(1)).getTrainerById(1L);
@@ -81,7 +80,7 @@ public class TrainerControllerTest {
 
     @Test
     void updateTrainerTest() throws Exception {
-        Trainer updatedTrainer = new Trainer(1L, "Kira", "NEWYatsishina", null,  null,
+        Trainer updatedTrainer = new Trainer(1L, "Kira", "NEWYatsishina", 0L,
                 true, "Yoga");
 
         doNothing().when(trainerService).updateTrainer(anyLong(), Mockito.any(Trainer.class));
@@ -97,7 +96,7 @@ public class TrainerControllerTest {
 
     @Test
     void deleteTrainerTest() throws Exception {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
         doNothing().when(trainerService).deleteTrainer(1L);
@@ -113,11 +112,11 @@ public class TrainerControllerTest {
     @Test
     void getAllTrainers() throws Exception {
         when(trainerService.getAllTrainers()).thenReturn(Arrays.asList(
-                new Trainer(1L, "John", "Smith", "John.Smith", "password123",
+                new Trainer(1L, "John", "Smith", 0L,
                         true, "Personal Trainer"),
-                new Trainer(2L, "Jane", "Doe", "Jane.Doe", "password456",
+                new Trainer(2L, "Jane", "Doe", 0L,
                         true, "Strength Coach"),
-                new Trainer(3L, "Bob", "Brown", "Bob.Brown", "password789",
+                new Trainer(3L, "Bob", "Brown", 0L,
                         true,"Yoga Instructor")
         ));
 
@@ -129,7 +128,6 @@ public class TrainerControllerTest {
                 .andExpect(jsonPath("$[*].firstName", contains("John", "Jane", "Bob")))
                 .andExpect(jsonPath("$[*].lastName", contains("Smith", "Doe", "Brown")))
                 .andExpect(jsonPath("$[*].username", contains("John.Smith", "Jane.Doe", "Bob.Brown")))
-                .andExpect(jsonPath("$[*].password", contains("password123", "password456", "password789")))
                 .andExpect(jsonPath("$[*].isActive", contains(true, true, true)))
                 .andExpect(jsonPath("$[*].trainingType.trainingTypeName", contains("Personal Trainer", "Strength Coach", "Yoga Instructor")));
 

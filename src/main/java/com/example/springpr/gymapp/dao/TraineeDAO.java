@@ -44,7 +44,7 @@ public class TraineeDAO {
         if(trainee.getIsActive() != curTrainee.getIsActive()) curTrainee.setIsActive(trainee.getIsActive());
         if(trainee.getDateOfBirth() != null) curTrainee.setDateOfBirth(trainee.getDateOfBirth());
         if(trainee.getAddress() != null) curTrainee.setAddress(trainee.getAddress());
-        curTrainee.setUsernameCountPassword(count);
+        curTrainee.setCountAndPassword(count);
         logger.info("Updated trainee: {}", curTrainee);
     }
 

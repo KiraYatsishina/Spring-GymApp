@@ -12,29 +12,31 @@ public class UserTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User(1L, "John", "Doe", "John.Doe", "password123", true);
+        user = new User(1L, "John", "Doe", 0L, true);
     }
 
     @Test
     public void testGenerateUsernameIfNull() {
-        User userWithNullUsername = new User(3L, "Alex", "Johnson", null, "password456", true);
+        User userWithNullUsername = new User(3L, "Alex", "Johnson", 0L, true);
         assertEquals("Alex.Johnson", userWithNullUsername.getUsername());
     }
 
     @Test
     public void testSetUsernameCountPassword() {
-        user.setUsernameCountPassword(1L);
+        user.setCountAndPassword(1L);
         assertEquals("John.Doe1", user.getUsername());
         assertNotNull(user.getPassword());
     }
 
     @Test
     public void testEqualsAndHashCode() {
-        User anotherUser = new User(1L, "John", "Doe", "John.Doe", "password123", true);
+        User anotherUser = new User(1L, "John", "Doe", 0L, true);
+        anotherUser.setUsername(user.getUsername());
+        anotherUser.setPassword(user.getPassword());
         assertEquals(user, anotherUser);
         assertEquals(user.hashCode(), anotherUser.hashCode());
 
-        User differentUser = new User(2L, "Jane", "Smith", "Jane.Smith", "password456", false);
+        User differentUser = new User(2L, "Jane", "Smith", 0L, false);
         assertNotEquals(user, differentUser);
         assertNotEquals(user.hashCode(), differentUser.hashCode());
     }

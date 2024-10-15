@@ -6,8 +6,8 @@ public class Trainer extends User{
 
     private TrainingType trainingType;
 
-    public Trainer(Long id, String firstName, String lastName, String username, String password, boolean isActive, String trainingType) {
-        super(id, firstName, lastName, username, password, isActive);
+    public Trainer(Long id, String firstName, String lastName, long count, boolean isActive, String trainingType) {
+        super(id, firstName, lastName, count, isActive);
         this.trainingType = new TrainingType(trainingType);
     }
 

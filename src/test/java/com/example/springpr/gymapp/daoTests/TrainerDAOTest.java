@@ -22,7 +22,7 @@ public class TrainerDAOTest {
 
     @Test
     void createTrainerTest() {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
         trainerDAO.createTrainer(trainer);
@@ -32,24 +32,24 @@ public class TrainerDAOTest {
         assertEquals(retrievedTrainer.getId(), trainer.getId());
         assertEquals(retrievedTrainer.getFirstName(), trainer.getFirstName());
         assertEquals(retrievedTrainer.getLastName(), trainer.getLastName());
-        assertEquals(retrievedTrainer.getUsername(), trainer.getUsername());
-        assertEquals(retrievedTrainer.getPassword(), trainer.getPassword());
+        assertEquals(retrievedTrainer.getUsername(), trainer.getFirstName() + "." + trainer.getLastName());
+        assertNotNull(retrievedTrainer.getPassword());
         assertEquals(retrievedTrainer.getIsActive(), trainer.getIsActive());
         assertEquals(retrievedTrainer.getTrainingType(), trainer.getTrainingType());
     }
 
     @Test
     void createTrainerWithExistingFirstnameLastnameTest() {
-        trainerDAO.createTrainer(new Trainer(1L, "John", "Doe", "John.Doe", "password1",
+        trainerDAO.createTrainer(new Trainer(1L, "John", "Doe", 0L,
                 true, "Personal Trainer"));
-        trainerDAO.createTrainer(new Trainer(2L, "John", "Doe", "John.Doe1", "password2",
+        trainerDAO.createTrainer(new Trainer(2L, "John", "Doe", 1L,
                 false, "Strength Coach"));
-        trainerDAO.createTrainer(new Trainer(3L, "John", "Doe", "John.Doe2", "password3",
+        trainerDAO.createTrainer(new Trainer(3L, "John", "Doe", 2L,
                 true, "Personal Trainer"));
-        trainerDAO.createTrainer(new Trainer(4L, "Kira", "Yatsishina", "Kira.Yatsishina", "myPassword",
+        trainerDAO.createTrainer(new Trainer(4L, "Kira", "Yatsishina", 0L,
                 true, "Yoga Instructor"));
 
-        Trainer trainer = new Trainer(5L, "John", "Doe", null, null,
+        Trainer trainer = new Trainer(5L, "John", "Doe", 3L,
                 true, "Strength Coach");
 
         trainerDAO.createTrainer(trainer);
@@ -59,15 +59,15 @@ public class TrainerDAOTest {
         assertEquals(retrievedTrainer.getId(), trainer.getId());
         assertEquals(retrievedTrainer.getFirstName(), trainer.getFirstName());
         assertEquals(retrievedTrainer.getLastName(), trainer.getLastName());
-        assertEquals(retrievedTrainer.getUsername(), trainer.getUsername());
-        assertEquals(retrievedTrainer.getPassword(), trainer.getPassword());
+        assertEquals(retrievedTrainer.getUsername(), trainer.getFirstName() + "." + trainer.getLastName() + 3);
+        assertNotNull(retrievedTrainer.getPassword());
         assertEquals(retrievedTrainer.getIsActive(), trainer.getIsActive());
         assertEquals(retrievedTrainer.getTrainingType(), trainer.getTrainingType());
     }
 
     @Test
     void getTrainerByIdTest() {
-        Trainer trainer =new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer =new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
 
         trainerDAO.createTrainer(trainer);
@@ -77,8 +77,8 @@ public class TrainerDAOTest {
         assertEquals(retrievedTrainer.getId(), trainer.getId());
         assertEquals(retrievedTrainer.getFirstName(), trainer.getFirstName());
         assertEquals(retrievedTrainer.getLastName(), trainer.getLastName());
-        assertEquals(retrievedTrainer.getUsername(), trainer.getUsername());
-        assertEquals(retrievedTrainer.getPassword(), trainer.getPassword());
+        assertEquals(retrievedTrainer.getUsername(), trainer.getFirstName() + "." + trainer.getLastName());
+        assertNotNull(retrievedTrainer.getPassword());
         assertEquals(retrievedTrainer.getIsActive(), trainer.getIsActive());
         assertEquals(retrievedTrainer.getTrainingType(), trainer.getTrainingType());
     }
@@ -91,9 +91,9 @@ public class TrainerDAOTest {
 
     @Test
     void updateTrainerTest() {
-        Trainer trainer =new Trainer(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainer trainer =new Trainer(1L, "Kira", "Yatsishina", 0L,
                 true, "Yoga");
-        Trainer updateTrainer =new Trainer(1L, "NEWKira", "NEWYatsishina", null,  "NEWmyPassword",
+        Trainer updateTrainer =new Trainer(1L, "NEWKira", "NEWYatsishina", 0L,
                 false, "NEW Yoga");
 
         trainerDAO.createTrainer(trainer);
@@ -107,21 +107,21 @@ public class TrainerDAOTest {
         assertEquals(retrievedTrainer.getFirstName(), updateTrainer.getFirstName());
         assertEquals(retrievedTrainer.getLastName(), updateTrainer.getLastName());
         assertEquals(retrievedTrainer.getUsername(), "NEWKira.NEWYatsishina");
-        assertEquals(retrievedTrainer.getPassword(), updateTrainer.getPassword());
+        assertEquals(retrievedTrainer.getPassword(), trainer.getPassword());
         assertEquals(retrievedTrainer.getIsActive(), updateTrainer.getIsActive());
         assertEquals(retrievedTrainer.getTrainingType(), updateTrainer.getTrainingType());
     }
 
     @Test
     void updateTrainerWithExistingFirstnameLastnameTest() {
-        trainerDAO.createTrainer(new Trainer(1L, "John", "Doe", "John.Doe", "password123",
+        trainerDAO.createTrainer(new Trainer(1L, "John", "Doe", 0L,
                 true, "Personal Trainer"));
-        trainerDAO.createTrainer(new Trainer(2L, "John", "Doe", "John.Doe1", "password123",
+        trainerDAO.createTrainer(new Trainer(2L, "John", "Doe", 1L,
                 true, "Personal Trainer"));
-        trainerDAO.createTrainer(new Trainer(3L, "Jane", "Doe", "Jane.Doe", "password456",
+        trainerDAO.createTrainer(new Trainer(3L, "Jane", "Doe", 0L,
                 true, "Strength Coach"));
 
-        Trainer updateTrainer = new Trainer(3L, "John", "Doe", null, "password789",
+        Trainer updateTrainer = new Trainer(3L, "John", "Doe", 2L,
                 false,"Yoga Instructor");
 
         long count = 2;
@@ -133,15 +133,14 @@ public class TrainerDAOTest {
         assertEquals(retrievedTrainer.getFirstName(), updateTrainer.getFirstName());
         assertEquals(retrievedTrainer.getLastName(), updateTrainer.getLastName());
         assertEquals(retrievedTrainer.getUsername(), "John.Doe2");
-        assertEquals(retrievedTrainer.getPassword(), updateTrainer.getPassword());
+        assertNotNull(retrievedTrainer.getPassword());
         assertEquals(retrievedTrainer.getIsActive(), updateTrainer.getIsActive());
         assertEquals(retrievedTrainer.getTrainingType(), updateTrainer.getTrainingType());
-
     }
 
     @Test
     void updateNonExistentTrainerTest() {
-        Trainer updateTrainer = new Trainer(3L, "John", "Doe", null, "password789",
+        Trainer updateTrainer = new Trainer(3L, "John", "Doe", 0L,
                 false,"Yoga Instructor");
 
         trainerDAO.updateTrainer(999L, updateTrainer, 0); // message in loggs
@@ -149,7 +148,7 @@ public class TrainerDAOTest {
 
     @Test
     void deleteTrainerTest() {
-        Trainer trainer = new Trainer(4L, "John", "Doe", null, "password789",
+        Trainer trainer = new Trainer(4L, "John", "Doe", 0L,
                 false,"Yoga Instructor");
 
         trainerDAO.createTrainer(trainer);
@@ -167,9 +166,9 @@ public class TrainerDAOTest {
     @Test
     void getAllTrainersTest() {
         List<Trainer> expectedTrainers = Arrays.asList(
-                new Trainer(1L, "John", "Doe", "John.Doe", "password123",
+                new Trainer(1L, "John", "Doe", 0L,
                         true, "Personal Trainer"),
-                new Trainer(2L, "John", "Doe", "John.Doe1", "password123",
+                new Trainer(2L, "John", "Doe", 1L,
                         true, "Personal Trainer")
         );
 

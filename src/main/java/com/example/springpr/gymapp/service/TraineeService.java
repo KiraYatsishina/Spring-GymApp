@@ -17,8 +17,8 @@ public class TraineeService {
     private CountHelper countHelper;
 
     public void createTrainee(Trainee trainee) {
-        long count = countHelper.countUser(trainee);
-        trainee.setUsernameCountPassword(count);
+        long count = countHelper.countUser(trainee.getFirstName(), trainee.getLastName());
+        trainee.setCountAndPassword(count);
         traineeDAO.createTrainee(trainee);
     }
 
@@ -31,7 +31,7 @@ public class TraineeService {
     }
 
     public void updateTrainee(Long id, Trainee trainee) {
-        long count = countHelper.countUser(trainee);
+        long count = countHelper.countUser(trainee.getFirstName(), trainee.getLastName());
         traineeDAO.updateTrainee(id, trainee, count);
     }
 

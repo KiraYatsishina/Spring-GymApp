@@ -39,7 +39,7 @@ public class TraineeServiceTest {
 
     @Test
     void createTraineeTest() {
-        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         traineeService.createTrainee(trainee);
@@ -50,7 +50,7 @@ public class TraineeServiceTest {
     @Test
     void getTraineeByIdTest() {
         Long traineeId = 1L;
-        Trainee expectedTrainee = new Trainee(traineeId, "Kira", "Yatsishina", "Kira.Yatsishina", "myPassword",
+        Trainee expectedTrainee = new Trainee(traineeId, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         when(traineeDAO.getTraineeById(traineeId)).thenReturn(expectedTrainee);
@@ -72,15 +72,15 @@ public class TraineeServiceTest {
 
     @Test
     void updateTraineeTest() {
-        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         long count = 2L;
-        when(countHelper.countUser(trainee)).thenReturn(count);
+        when(countHelper.countUser(trainee.getFirstName(), trainee.getLastName())).thenReturn(count);
 
         traineeService.updateTrainee(1L, trainee);
 
-        verify(countHelper, times(1)).countUser(trainee);
+        verify(countHelper, times(1)).countUser(trainee.getFirstName(), trainee.getLastName());
         verify(traineeDAO, times(1)).updateTrainee(1L, trainee, count);
     }
 
@@ -96,11 +96,11 @@ public class TraineeServiceTest {
     @Test
     void getAllTraineesTest() {
         List<Trainee> trainees = Arrays.asList(
-                new Trainee(1L, "Emily", "Jones", "Emily.Jones", "password789",
+                new Trainee(1L, "Emily", "Jones", 0L,
                         false, LocalDate.of(1988, 3, 3), "address1"),
-                new Trainee(2L, "Michael", "Brown", "Michael.Brown", "password101",
+                new Trainee(2L, "Michael", "Brown", 0L,
                         true, LocalDate.of(1995, 4, 4), "address2"),
-                new Trainee(3L, "Sarah", "Johnson", "Sarah.Johnson", "password102",
+                new Trainee(3L, "Sarah", "Johnson", 0L,
                         false, LocalDate.of(1993, 5, 5), "address3")
         );
 

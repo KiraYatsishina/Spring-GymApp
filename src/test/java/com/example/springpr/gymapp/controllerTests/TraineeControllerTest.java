@@ -48,7 +48,7 @@ public class TraineeControllerTest {
 
     @Test
     void createTraineeTest() throws Exception {
-        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina",  "myPassword",
+        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina",0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
         String traineeJson = objectMapper.writeValueAsString(trainee);
 
@@ -62,7 +62,7 @@ public class TraineeControllerTest {
 
     @Test
     void getTraineeByIdTest() throws Exception {
-        Trainee expectedTrainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina", "myPassword",
+        Trainee expectedTrainee = new Trainee(1L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         when(traineeService.getTraineeById(1L)).thenReturn(expectedTrainee);
@@ -74,8 +74,7 @@ public class TraineeControllerTest {
                 .andExpect(jsonPath("$.firstName").value(expectedTrainee.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(expectedTrainee.getLastName()))
                 .andExpect(jsonPath("$.isActive").value(expectedTrainee.getIsActive()))
-                .andExpect(jsonPath("$.password").value(expectedTrainee.getPassword()))
-                .andExpect(jsonPath("$.username").value(expectedTrainee.getUsername()))
+                .andExpect(jsonPath("$.username").value(expectedTrainee.getFirstName() + "." + expectedTrainee.getLastName()))
                 .andExpect(jsonPath("$.dateOfBirth").value(expectedTrainee.getDateOfBirth().toString()))
                 .andExpect(jsonPath("$.address").value(expectedTrainee.getAddress()));
 
@@ -84,7 +83,7 @@ public class TraineeControllerTest {
 
     @Test
     void updateTraineeTest() throws Exception {
-        Trainee updatedTrainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina", "newPassword",
+        Trainee updatedTrainee = new Trainee(1L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Kyiv");
 
         doNothing().when(traineeService).updateTrainee(anyLong(), Mockito.any(Trainee.class));
@@ -99,7 +98,7 @@ public class TraineeControllerTest {
 
     @Test
     void deleteTraineeTest() throws Exception {
-        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", "Kira.Yatsishina", "myPassword",
+        Trainee trainee = new Trainee(1L, "Kira", "Yatsishina", 0L,
                 true, LocalDate.of(1988, 3, 3), "Odesa");
 
         doNothing().when(traineeService).deleteTrainee(1L);
@@ -114,11 +113,11 @@ public class TraineeControllerTest {
     @Test
     void getAllTraineesTest() throws Exception {
         when(traineeService.getAllTrainees()).thenReturn(Arrays.asList(
-                new Trainee(1L, "Emily", "Jones", "Emily.Jones", "password789",
+                new Trainee(1L, "Emily", "Jones", 0L,
                         false, LocalDate.of(1988, 3, 3), "address1"),
-                new Trainee(2L, "Michael", "Brown", "Michael.Brown", "password101",
+                new Trainee(2L, "Michael", "Brown", 0L,
                         true, LocalDate.of(1995, 4, 4), "address2"),
-                new Trainee(3L, "Sarah", "Johnson", "Sarah.Johnson", "password102",
+                new Trainee(3L, "Sarah", "Johnson", 0L,
                         false, LocalDate.of(1993, 5, 5), "address3")
         ));
 
@@ -129,7 +128,6 @@ public class TraineeControllerTest {
                 .andExpect(jsonPath("$[*].id", contains(1, 2, 3)))
                 .andExpect(jsonPath("$[*].firstName", contains("Emily", "Michael", "Sarah")))
                 .andExpect(jsonPath("$[*].lastName", contains("Jones", "Brown", "Johnson")))
-                .andExpect(jsonPath("$[*].password", contains("password789", "password101", "password102")))
                 .andExpect(jsonPath("$[*].username", contains("Emily.Jones", "Michael.Brown", "Sarah.Johnson")))
                 .andExpect(jsonPath("$[*].isActive", contains(false, true, false)))
                 .andExpect(jsonPath("$[*].dateOfBirth", contains("1988-03-03", "1995-04-04", "1993-05-05")))

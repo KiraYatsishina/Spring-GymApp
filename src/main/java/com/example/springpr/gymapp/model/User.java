@@ -1,5 +1,7 @@
 package com.example.springpr.gymapp.model;
 
+import com.example.springpr.gymapp.CountHelper;
+
 import java.security.SecureRandom;
 import java.util.Objects;
 
@@ -11,12 +13,12 @@ public class User {
     private String password;
     private boolean isActive;
 
-    public User(Long id, String firstName, String lastName, String username, String password, boolean isActive) {
+    public User(Long id, String firstName, String lastName, long count, boolean isActive) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.username = username == null ? firstName + "." + lastName : username;
-        this.password = password;
+        this.username = firstName + "." + lastName + (count > 0 ? count : "");
+        this.password = generatePassword();
         this.isActive = isActive;
     }
     public User() {}
@@ -49,15 +51,9 @@ public class User {
         return username;
     }
 
-    public void setUsernameCountPassword(long count) {
-        this.username = firstName + "." + lastName + (count > 0 ? count : "");
-        this.password = password == null ? generatePassword() : password;
-    }
-
     public void setUsername(String username) {
         this.username = username;
     }
-
 
     public String getPassword() {
         return password;
@@ -75,6 +71,10 @@ public class User {
         isActive = active;
     }
 
+    public void setCountAndPassword(long count) {
+        this.password = generatePassword();
+        this.username = firstName + "." + lastName + (count > 0 ? count : "");
+    }
     private String generatePassword() {
         String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         SecureRandom random = new SecureRandom();
