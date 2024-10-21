@@ -1,120 +1,73 @@
 package com.example.springpr.gymapp.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "TRAININGS")
 public class Training {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "training_id")
     private Long id;
-    private Long traineeId;
-    private Long trainerId;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "trainee_id")
+    private Trainee trainee;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "trainer_id")
+    @JsonManagedReference
+    private Trainer trainer;
+
+    @Column(name = "training_name")
     private String trainingName;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "training_type_id")
     private TrainingType trainingType;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Column(name = "date")
     private LocalDate trainingDate;
-    private int trainingDuration;
 
-    public Training(Long id, Long traineeId, Long trainerId,
-                    String trainingName, String trainingType,
-                    LocalDate trainingDate, int trainingDuration) {
-        this.id = id;
-        this.traineeId = traineeId;
-        this.trainerId = trainerId;
-        this.trainingName = trainingName;
-        this.trainingType = new TrainingType(trainingType);
-        this.trainingDate = trainingDate;
-        this.trainingDuration = trainingDuration;
-    }
-
-    public Training() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getTraineeId() {
-        return traineeId;
-    }
-
-    public void setTraineeId(Long traineeId) {
-        this.traineeId = traineeId;
-    }
-
-    public Long getTrainerId() {
-        return trainerId;
-    }
-
-    public void setTrainerId(Long trainerId) {
-        this.trainerId = trainerId;
-    }
-
-    public String getTrainingName() {
-        return trainingName;
-    }
-
-    public void setTrainingName(String trainingName) {
-        this.trainingName = trainingName;
-    }
-
-    public TrainingType getTrainingType() {
-        return trainingType;
-    }
-
-    public void setTrainingType(TrainingType trainingType) {
-        this.trainingType = trainingType;
-    }
-
-    public LocalDate getTrainingDate() {
-        return trainingDate;
-    }
-
-    public void setTrainingDate(LocalDate trainingDate) {
-        this.trainingDate = trainingDate;
-    }
-
-    public int getTrainingDuration() {
-        return trainingDuration;
-    }
-
-    public void setTrainingDuration(int trainingDuration) {
-        this.trainingDuration = trainingDuration;
-    }
+    private int duration;
 
     @Override
-    public String toString() {
-        return "Training{" +
-                "id=" + id +
-                ", traineeId=" + traineeId +
-                ", trainerId=" + trainerId +
-                ", trainingName='" + trainingName + '\'' +
-                ", trainingType=" + trainingType +
-                ", trainingDate=" + trainingDate +
-                ", trainingDuration=" + trainingDuration +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
         Training training = (Training) o;
-        return trainingDuration == training.trainingDuration &&
-                Objects.equals(id, training.id) &&
-                Objects.equals(traineeId, training.traineeId) &&
-                Objects.equals(trainerId, training.trainerId) &&
-                Objects.equals(trainingName, training.trainingName) &&
-                Objects.equals(trainingType, training.trainingType) &&
-                Objects.equals(trainingDate, training.trainingDate);
+        return getId() != null && Objects.equals(getId(), training.getId());
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                .hashCode()
+                : getClass().hashCode();
     }
 }

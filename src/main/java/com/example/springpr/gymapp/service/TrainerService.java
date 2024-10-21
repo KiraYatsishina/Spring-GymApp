@@ -1,41 +1,43 @@
 package com.example.springpr.gymapp.service;
 
-import com.example.springpr.gymapp.CountHelper;
-import com.example.springpr.gymapp.dao.TrainerDAO;
+import com.example.springpr.gymapp.dto.TrainerDTO;
+import com.example.springpr.gymapp.model.Role;
 import com.example.springpr.gymapp.model.Trainer;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.springpr.gymapp.model.TrainingType;
+import com.example.springpr.gymapp.model.TrainingTypeEnum;
+import com.example.springpr.gymapp.repository.TrainerRepository;
+import com.example.springpr.gymapp.repository.TrainingTypeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class TrainerService {
-    @Autowired
-    private TrainerDAO trainerDAO;
 
-    @Autowired
-    private CountHelper countHelper;
+    private final TrainerRepository trainerRepository;
+    private final TrainingTypeRepository trainingTypeRepository;
 
-    public void createTrainer(Trainer trainer) {
-        long count = countHelper.countUser(trainer.getFirstName(), trainer.getLastName());
-        trainer.setCountAndPassword(count);
-        trainerDAO.createTrainer(trainer);
-    }
+    public Trainer mapToEntity(TrainerDTO trainerDTO) {
+        if (trainerDTO == null) {
+            return null;
+        }
+        Trainer trainer = new Trainer();
+        trainer.setFirstName(trainerDTO.getFirstName());
+        trainer.setLastName(trainerDTO.getLastName());
 
-    public Trainer getTrainerById(Long id) {
-        return trainerDAO.getTrainerById(id);
-    }
+        TrainingTypeEnum specializationEnum;
+        try {
+            specializationEnum = TrainingTypeEnum.valueOf(trainerDTO.getSpecialization().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid specialization type: " + trainerDTO.getSpecialization());
+        }
 
-    public void updateTrainer(Long id, Trainer trainer) {
-        long count = countHelper.countUser(trainer.getFirstName(), trainer.getLastName());
-        trainerDAO.updateTrainer(id, trainer, count);
-    }
+        TrainingType trainingType = trainingTypeRepository
+                .findByTrainingTypeName(specializationEnum)
+                .orElseThrow(() -> new RuntimeException("TrainingType not found for specialization: " + specializationEnum));
 
-    public void deleteTrainer(Long id) {
-        trainerDAO.deleteTrainer(id);
-    }
+        trainer.setSpecialization(trainingType);
 
-    public List<Trainer> getAllTrainers() {
-        return trainerDAO.getAllTrainers();
+        return trainer;
     }
 }

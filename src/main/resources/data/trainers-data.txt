@@ -1,5 +1,0 @@
-1,John,Smith,true,Personal Trainer
-2,Jane,Doe,true,Strength Coach
-3,Bob,Brown,true,Yoga Instructor
-4,Alice,Johnson,true,Group Fitness Trainer
-5,Charlie,Wilson,true,CrossFit Coach

@@ -1,34 +1,61 @@
 package com.example.springpr.gymapp.model;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "TRAININGTYPES")
 public class TrainingType {
-    private String trainingTypeName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "training_type_id")
+    private Long id;
 
-    public TrainingType(String trainingTypeName) {
-        this.trainingTypeName = trainingTypeName;
-    }
+    @Column(name = "training_type_name")
+    @Enumerated(EnumType.STRING)
+    private TrainingTypeEnum trainingTypeName;
 
-    public TrainingType() {}
+    @OneToMany(mappedBy = "trainingType")
+    private List<Training> trainings = new ArrayList<>();
 
-    public String getTrainingTypeName() {
-        return trainingTypeName;
-    }
-
-    public void setTrainingTypeName(String trainingTypeName) {
-        this.trainingTypeName = trainingTypeName;
-    }
+    @OneToMany(mappedBy = "specialization")
+    private List<Trainer> trainers = new ArrayList<>();
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TrainingType that = (TrainingType) o;
-        return Objects.equals(trainingTypeName, that.trainingTypeName);
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        TrainingType trainingType = (TrainingType) o;
+        return getId() != null && Objects.equals(getId(), trainingType.getId());
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(trainingTypeName);
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                .hashCode()
+                : getClass().hashCode();
     }
 }

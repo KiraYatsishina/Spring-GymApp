@@ -1,7 +1,5 @@
 package com.example.springpr.gymapp.serviceTests;
 
-import com.example.springpr.gymapp.CountHelper;
-import com.example.springpr.gymapp.dao.TrainerDAO;
 import com.example.springpr.gymapp.model.Trainer;
 import com.example.springpr.gymapp.service.TrainerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,90 +20,4 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class TrainerServiceTest {
 
-    @InjectMocks
-    private TrainerService trainerService;
-
-    @Mock
-    private TrainerDAO trainerDAO;
-
-    @Mock
-    private CountHelper countHelper;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    void createTrainerTest() {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
-                true, "Yoga");
-
-        trainerService.createTrainer(trainer);
-
-        verify(trainerDAO, times(1)).createTrainer(trainer);
-    }
-
-    @Test
-    void getTrainerByIdTest() {
-        Long trainerId = 1L;
-        Trainer expectedTrainer = new Trainer(trainerId, "Kira", "Yatsishina", 0L,
-                true, "Yoga");
-
-        when(trainerDAO.getTrainerById(trainerId)).thenReturn(expectedTrainer);
-
-        Trainer actualTrainer = trainerService.getTrainerById(trainerId);
-
-        assertNotNull(actualTrainer);
-        assertEquals(expectedTrainer.getId(), actualTrainer.getId());
-        assertEquals(expectedTrainer.getFirstName(), actualTrainer.getFirstName());
-        assertEquals(expectedTrainer.getLastName(), actualTrainer.getLastName());
-        assertEquals(expectedTrainer.getUsername(), actualTrainer.getUsername());
-        assertEquals(expectedTrainer.getPassword(), actualTrainer.getPassword());
-        assertEquals(expectedTrainer.getIsActive(), actualTrainer.getIsActive());
-        assertEquals(expectedTrainer.getTrainingType().getTrainingTypeName(), actualTrainer.getTrainingType().getTrainingTypeName());
-
-        verify(trainerDAO, times(1)).getTrainerById(trainerId);
-    }
-
-    @Test
-    void updateTrainerTest() {
-        Trainer trainer = new Trainer(1L, "Kira", "Yatsishina", 0L,
-                true, "Yoga");
-
-
-        long count = 2L;
-        when(countHelper.countUser(trainer.getFirstName(), trainer.getLastName())).thenReturn(count);
-        trainerService.updateTrainer(1L, trainer);
-
-        verify(trainerDAO, times(1)).updateTrainer(1L, trainer, count);
-    }
-
-    @Test
-    void deleteTrainerTest() {
-        Long trainerId = 1L;
-
-        trainerService.deleteTrainer(trainerId);
-
-        verify(trainerDAO, times(1)).deleteTrainer(trainerId);
-    }
-
-    @Test
-    void getAllTrainersTest() {
-        List<Trainer> trainers = Arrays.asList(
-                new Trainer(1L, "John", "Smith", 0L,
-                        true, "Personal Trainer"),
-                new Trainer(2L, "Jane", "Doe", 0L,
-                        true, "Strength Coach"),
-                new Trainer(3L, "Bob", "Brown", 0L,
-                        true,"Yoga Instructor")
-        );
-
-        when(trainerDAO.getAllTrainers()).thenReturn(trainers);
-
-        List<Trainer> trainerList = trainerService.getAllTrainers();
-
-        assertEquals(3, trainerList.size());
-        verify(trainerDAO, times(1)).getAllTrainers();
-    }
 }

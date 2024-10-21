@@ -1,62 +1,81 @@
 package com.example.springpr.gymapp.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class Trainee extends User{
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Builder
+@Table(name = "TRAINEES")
+@PrimaryKeyJoinColumn(name = "user_id")
+public class Trainee extends User {
+
+    @Column(name = "trainee_id")
+    private Long traineeId;
+
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+
     private String address;
 
-    public Trainee(Long id, String firstName, String lastName, long count, boolean isActive, LocalDate dateOfBirth, String address) {
-        super(id, firstName, lastName, count, isActive);
-        this.dateOfBirth = dateOfBirth;
-        this.address = address;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "trainee_trainer",
+            joinColumns = @JoinColumn(name = "trainee_id", referencedColumnName = "trainee_id"),
+            inverseJoinColumns = @JoinColumn(name = "trainer_id", referencedColumnName = "trainer_id")
+    )
+    private List<Trainer> trainers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "trainee", fetch = FetchType.LAZY)
+    private List<Training> trainings = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Trainee trainee = (Trainee) o;
+        return getId() != null && Objects.equals(getId(), trainee.getId());
     }
 
-    public Trainee() {}
-
-    public String getAddress() {
-        return address;
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                .hashCode()
+                : getClass().hashCode();
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
     @Override
     public String toString() {
         return "Trainee{" +
                 "id=" + getId() +
                 ", firstName='" + getFirstName() + '\'' +
                 ", lastName='" + getLastName() + '\'' +
-                ", isActive=" + getIsActive() +
                 ", dateOfBirth=" + dateOfBirth +
                 ", address='" + address + '\'' +
+                ", isActive=" + isActive() +
+                ", username='" + getUsername() + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        Trainee trainee = (Trainee) o;
-        return Objects.equals(dateOfBirth, trainee.dateOfBirth) &&
-                Objects.equals(address, trainee.address);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), dateOfBirth, address);
     }
 }

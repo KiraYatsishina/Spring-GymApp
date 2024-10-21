@@ -1,49 +1,62 @@
 package com.example.springpr.gymapp.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "TRAINERS")
+@PrimaryKeyJoinColumn(name = "user_id")
 public class Trainer extends User{
 
-    private TrainingType trainingType;
+    @Column(name = "trainer_id")
+    private Long trainerId;
 
-    public Trainer(Long id, String firstName, String lastName, long count, boolean isActive, String trainingType) {
-        super(id, firstName, lastName, count, isActive);
-        this.trainingType = new TrainingType(trainingType);
-    }
+    @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialization")
+    private TrainingType specialization;
 
-    public Trainer() {}
+    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
+    private List<Trainee> trainees = new ArrayList<>();
 
-    public TrainingType getTrainingType() {
-        return trainingType;
-    }
-
-    public void setTrainingType(TrainingType trainingType) {
-        this.trainingType = trainingType;
-    }
+    @OneToMany(mappedBy = "trainer")
+    private List<Training> trainings = new ArrayList<>();
 
     @Override
-    public String toString() {
-        return "Trainer{" +
-                "id=" + getId() +
-                ", firstName='" + getFirstName() + '\'' +
-                ", lastName='" + getLastName() + '\'' +
-                ", isActive=" + getIsActive() +
-                ", trainingType=" + trainingType +
-                '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), trainingType);
-    }
-
-    @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
         Trainer trainer = (Trainer) o;
-        return Objects.equals(trainingType, trainer.trainingType);
+        return getId() != null && Objects.equals(getId(), trainer.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                .hashCode()
+                : getClass().hashCode();
     }
 }

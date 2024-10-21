@@ -1,107 +1,96 @@
 package com.example.springpr.gymapp.model;
 
-import com.example.springpr.gymapp.CountHelper;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.SecureRandom;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
-public class User {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "USERS")
+public class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "username", unique = true)
     private String username;
+    @Column(name = "password", unique = true)
     private String password;
+
+    @Column(name = "is_active")
     private boolean isActive;
 
-    public User(Long id, String firstName, String lastName, long count, boolean isActive) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = firstName + "." + lastName + (count > 0 ? count : "");
-        this.password = generatePassword();
-        this.isActive = isActive;
-    }
-    public User() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean active) {
-        isActive = active;
-    }
-
-    public void setCountAndPassword(long count) {
-        this.password = generatePassword();
-        this.username = firstName + "." + lastName + (count > 0 ? count : "");
-    }
-    private String generatePassword() {
-        String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        SecureRandom random = new SecureRandom();
-        StringBuilder passwordBuilder = new StringBuilder(10);
-        for (int i = 0; i < 10; i++) {
-            int index = random.nextInt(characters.length());
-            passwordBuilder.append(characters.charAt(index));
-        }
-        return passwordBuilder.toString();
-    }
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-
-        User user = (User) obj;
-        return isActive == user.isActive &&
-                id.equals(user.id) &&
-                firstName.equals(user.firstName) &&
-                lastName.equals(user.lastName) &&
-                username.equals(user.username) &&
-                password.equals(user.password);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        User user = (User) o;
+        return this.getId() != null && Objects.equals(getId(), user.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, username, password, isActive);
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                .hashCode()
+                : getClass().hashCode();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
