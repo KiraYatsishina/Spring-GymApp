@@ -1,5 +1,6 @@
 package com.example.springpr.gymapp.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -93,4 +94,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

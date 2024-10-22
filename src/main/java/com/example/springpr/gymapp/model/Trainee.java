@@ -66,16 +66,4 @@ public class Trainee extends User {
                 : getClass().hashCode();
     }
 
-    @Override
-    public String toString() {
-        return "Trainee{" +
-                "id=" + getId() +
-                ", firstName='" + getFirstName() + '\'' +
-                ", lastName='" + getLastName() + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", address='" + address + '\'' +
-                ", isActive=" + isActive() +
-                ", username='" + getUsername() + '\'' +
-                '}';
-    }
 }
