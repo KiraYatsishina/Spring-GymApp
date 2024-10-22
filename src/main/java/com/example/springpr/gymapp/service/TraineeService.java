@@ -17,7 +17,7 @@ public class TraineeService {
 
     public Optional<TraineeDTO> findByUsername(String username) {
         Optional<Trainee> trainee = traineeRepository.findByUsername(username);
-        return trainee.map(TraineeMapper::toDTO);
+        return trainee.map(t -> TraineeMapper.toDTO(t, true));
     }
 
     public Trainee mapToEntity(TraineeDTO traineeDTO) {

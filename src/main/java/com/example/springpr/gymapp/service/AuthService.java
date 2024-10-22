@@ -60,6 +60,21 @@ public class AuthService {
         return signUpUser(trainer, Role.TRAINER, trainerRepository::save);
     }
 
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+                String encodedNewPassword = passwordEncoder.encode(newPassword);
+                user.setPassword(encodedNewPassword);
+                userRepository.save(user);
+                return true;
+            } else return false;
+        }
+        return false;
+    }
+
     private <T extends User> Optional<UserDTO> signUpUser(T user, Role role, Function<T, T> saveFunction) {
         long count = userRepository.countByFirstNameAndLastName(user.getFirstName(), user.getLastName());
         String username = generateUniqueUsername(user.getFirstName(), user.getLastName(), count);
