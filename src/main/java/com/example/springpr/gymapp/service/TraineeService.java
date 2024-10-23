@@ -1,15 +1,22 @@
 package com.example.springpr.gymapp.service;
 
+import com.example.springpr.gymapp.dto.ShortTrainerDTO;
+import com.example.springpr.gymapp.dto.SignupTrainee;
 import com.example.springpr.gymapp.dto.TraineeDTO;
 import com.example.springpr.gymapp.dto.UpdateTraineeDTO;
 import com.example.springpr.gymapp.mapper.TraineeMapper;
+import com.example.springpr.gymapp.mapper.TrainerMapper;
 import com.example.springpr.gymapp.model.Trainee;
+import com.example.springpr.gymapp.model.Trainer;
 import com.example.springpr.gymapp.repository.TraineeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +29,7 @@ public class TraineeService {
         return trainee.map(t -> TraineeMapper.toDTO(t, true));
     }
 
-    public Trainee mapToEntity(TraineeDTO traineeDTO) {
+    public Trainee mapToEntity(SignupTrainee traineeDTO) {
         if (traineeDTO == null) {
             return null;
         }
@@ -62,12 +69,11 @@ public class TraineeService {
     }
 
     @Transactional
-    public boolean deleteTraineeByUsername(String username) {
-        Optional<Trainee> trainee = traineeRepository.findByUsername(username);
-        if (trainee.isPresent()) {
-            traineeRepository.deleteByUsername(username);
-            return true;
-        }
-        return false;
+    public List<ShortTrainerDTO> getNotAssignedTrainersList(String username){
+        Optional<Trainee> traineeOptional = traineeRepository.findByUsername(username);
+        List<Trainer> notAssignedTrainers = traineeRepository.findNotAssignedTrainers(traineeOptional.get().getUserId());
+
+        return notAssignedTrainers.stream()
+                .map(TrainerMapper::toShortDTO).collect(Collectors.toList());
     }
 }

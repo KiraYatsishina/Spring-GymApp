@@ -21,10 +21,7 @@ import java.util.Objects;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Trainer extends User{
 
-    @Column(name = "trainer_id")
-    private Long trainerId;
-
-    @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "specialization")
     private TrainingType specialization;
 
@@ -48,7 +45,7 @@ public class Trainer extends User{
                 : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         Trainer trainer = (Trainer) o;
-        return getId() != null && Objects.equals(getId(), trainer.getId());
+        return getUserId() != null && Objects.equals(getUserId(), trainer.getUserId());
     }
 
     @Override

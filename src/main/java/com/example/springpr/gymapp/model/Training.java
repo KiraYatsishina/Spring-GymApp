@@ -24,11 +24,11 @@ public class Training {
     @Column(name = "training_id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "trainee_id")
     private Trainee trainee;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "trainer_id")
     @JsonManagedReference
     private Trainer trainer;
@@ -36,7 +36,7 @@ public class Training {
     @Column(name = "training_name")
     private String trainingName;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "training_type_id")
     private TrainingType trainingType;
 

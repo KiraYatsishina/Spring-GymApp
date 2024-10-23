@@ -21,9 +21,6 @@ import java.util.Objects;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Trainee extends User {
 
-    @Column(name = "trainee_id")
-    private Long traineeId;
-
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
@@ -32,8 +29,8 @@ public class Trainee extends User {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "trainee_trainer",
-            joinColumns = @JoinColumn(name = "trainee_id", referencedColumnName = "trainee_id"),
-            inverseJoinColumns = @JoinColumn(name = "trainer_id", referencedColumnName = "trainer_id")
+            joinColumns = @JoinColumn(name = "trainee_id"),
+            inverseJoinColumns = @JoinColumn(name = "trainer_id")
     )
     private List<Trainer> trainers = new ArrayList<>();
 
@@ -54,7 +51,7 @@ public class Trainee extends User {
                 : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         Trainee trainee = (Trainee) o;
-        return getId() != null && Objects.equals(getId(), trainee.getId());
+        return getUserId() != null && Objects.equals(getUserId(), trainee.getUserId());
     }
 
     @Override

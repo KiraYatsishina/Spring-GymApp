@@ -1,8 +1,7 @@
 package com.example.springpr.gymapp.service;
 
-import com.example.springpr.gymapp.dto.TraineeDTO;
+import com.example.springpr.gymapp.dto.SignupTrainer;
 import com.example.springpr.gymapp.dto.TrainerDTO;
-import com.example.springpr.gymapp.mapper.TraineeMapper;
 import com.example.springpr.gymapp.mapper.TrainerMapper;
 import com.example.springpr.gymapp.model.*;
 import com.example.springpr.gymapp.repository.TrainerRepository;
@@ -25,7 +24,7 @@ public class TrainerService {
         return trainer.map(t -> TrainerMapper.toDTO(t, true));
     }
 
-    public Trainer mapToEntity(TrainerDTO trainerDTO) {
+    public Trainer mapToEntity(SignupTrainer trainerDTO) {
         if (trainerDTO == null) {
             return null;
         }

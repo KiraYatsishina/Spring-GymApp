@@ -1,7 +1,6 @@
 package com.example.springpr.gymapp.service;
 
 import com.example.springpr.gymapp.Util.JwtCore;
-import com.example.springpr.gymapp.dto.JwtRequest;
 import com.example.springpr.gymapp.dto.JwtResponse;
 import com.example.springpr.gymapp.dto.UserDTO;
 import com.example.springpr.gymapp.exception.AppError;
@@ -22,7 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.SecureRandom;
 import java.util.Optional;
@@ -40,7 +38,7 @@ public class AuthService {
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
 
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+    public ResponseEntity<?> createAuthToken(UserDTO authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
@@ -86,7 +84,7 @@ public class AuthService {
         user.setRole(role);
         user.setActive(true);
 
-        T savedUser = saveFunction.apply(user);
+        T savedUser = saveFunction.apply(user); // вот тут падает
 
         UserDTO userDTO = UserMapper.toDTO(savedUser);
         userDTO.setPassword(generatedPassword);

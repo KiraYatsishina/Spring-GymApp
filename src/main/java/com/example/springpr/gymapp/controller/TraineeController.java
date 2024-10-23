@@ -1,13 +1,9 @@
 package com.example.springpr.gymapp.controller;
 
 import com.example.springpr.gymapp.Util.JwtCore;
-import com.example.springpr.gymapp.dto.JwtRequest;
-import com.example.springpr.gymapp.dto.TraineeDTO;
-import com.example.springpr.gymapp.dto.UpdateTraineeDTO;
+import com.example.springpr.gymapp.dto.*;
 import com.example.springpr.gymapp.mapper.TraineeMapper;
 import com.example.springpr.gymapp.model.Trainee;
-import com.example.springpr.gymapp.model.User;
-import com.example.springpr.gymapp.service.AuthService;
 import com.example.springpr.gymapp.service.TraineeService;
 import com.example.springpr.gymapp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -71,16 +68,16 @@ public class TraineeController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainee not found");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(Principal principal) {
-        if (principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        String username = principal.getName();
-        boolean isDeleted = traineeService.deleteTraineeByUsername(username);
 
-        if (isDeleted) {
-            return ResponseEntity.ok("Trainee profile deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainee not found.");
+    @GetMapping("/notAssignedTrainersList")
+    public ResponseEntity<List<ShortTrainerDTO>> getNotAssignedTrainersList(Principal principal) {
+        if(principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        String username = principal.getName();
+        Optional<TraineeDTO> traineeDTOOptional = traineeService.findByUsername(username);
+        if(!traineeDTOOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        List<ShortTrainerDTO> unassignedTrainers = traineeService.getNotAssignedTrainersList(username);
+        return ResponseEntity.ok(unassignedTrainers);
     }
 }

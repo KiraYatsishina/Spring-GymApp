@@ -35,4 +35,15 @@ public class UserService implements UserDetailsService {
                 List.of(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }
+
+    @Transactional
+    public boolean deleteUserByUsername(String username) {
+        Optional<User> trainee = userRepository.findByUsername(username);
+        if (trainee.isPresent()) {
+            userRepository.deleteByUsername(username);
+            return true;
+        }
+        return false;
+    }
+
 }

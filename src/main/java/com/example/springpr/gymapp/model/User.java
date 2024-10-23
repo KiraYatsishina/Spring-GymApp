@@ -1,9 +1,7 @@
 package com.example.springpr.gymapp.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -25,7 +23,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Column(name = "first_name")
     private String firstName;
@@ -58,7 +56,7 @@ public class User implements UserDetails {
                 : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         User user = (User) o;
-        return this.getId() != null && Objects.equals(getId(), user.getId());
+        return this.getUserId() != null && Objects.equals(getUserId(), user.getUserId());
     }
 
     @Override
