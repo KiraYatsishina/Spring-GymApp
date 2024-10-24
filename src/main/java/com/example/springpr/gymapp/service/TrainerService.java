@@ -1,13 +1,15 @@
 package com.example.springpr.gymapp.service;
 
-import com.example.springpr.gymapp.dto.SignupTrainer;
-import com.example.springpr.gymapp.dto.TrainerDTO;
-import com.example.springpr.gymapp.dto.UpdateTrainerDTO;
+import com.example.springpr.gymapp.dto.Trainer.SignupTrainer;
+import com.example.springpr.gymapp.dto.Trainer.TrainerDTO;
+import com.example.springpr.gymapp.dto.Trainer.UpdateTrainerDTO;
 import com.example.springpr.gymapp.mapper.TrainerMapper;
 import com.example.springpr.gymapp.model.*;
 import com.example.springpr.gymapp.repository.TrainerRepository;
 import com.example.springpr.gymapp.repository.TrainingTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +19,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TrainerService.class); // Logger for tracking actions
+
     private final TrainerRepository trainerRepository;
     private final TrainingTypeRepository trainingTypeRepository;
-
 
     public Optional<TrainerDTO> findByUsername(String username) {
         Optional<Trainer> trainer = trainerRepository.findByUsername(username);
@@ -28,6 +31,7 @@ public class TrainerService {
 
     public Trainer mapToEntity(SignupTrainer trainerDTO) {
         if (trainerDTO == null) {
+            logger.warn("SignupTrainer DTO is null");
             return null;
         }
         Trainer trainer = new Trainer();
@@ -38,6 +42,7 @@ public class TrainerService {
         try {
             specializationEnum = TrainingTypeEnum.valueOf(trainerDTO.getSpecialization().toUpperCase());
         } catch (IllegalArgumentException e) {
+            logger.warn("Invalid specialization type: {}", trainerDTO.getSpecialization());
             throw new RuntimeException("Invalid specialization type: " + trainerDTO.getSpecialization());
         }
 
@@ -62,6 +67,7 @@ public class TrainerService {
             try {
                 specializationEnum = TrainingTypeEnum.valueOf(updateTrainerDTO.getSpecialization().toUpperCase());
             } catch (IllegalArgumentException e) {
+                logger.warn("Invalid specialization type provided for username {}: {}", username, updateTrainerDTO.getSpecialization());
                 return Optional.empty();
             }
 
@@ -69,6 +75,7 @@ public class TrainerService {
             if (specialization.isPresent()) {
                 trainer.setSpecialization(specialization.get());
             } else {
+                logger.warn("Specialization not found for username {}: {}", username, specializationEnum);
                 return Optional.empty();
             }
 

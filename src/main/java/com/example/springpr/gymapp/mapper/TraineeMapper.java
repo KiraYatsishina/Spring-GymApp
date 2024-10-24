@@ -1,8 +1,8 @@
 package com.example.springpr.gymapp.mapper;
 
 
-import com.example.springpr.gymapp.dto.ShortTraineeDTO;
-import com.example.springpr.gymapp.dto.TraineeDTO;
+import com.example.springpr.gymapp.dto.Trainee.ShortTraineeDTO;
+import com.example.springpr.gymapp.dto.Trainee.TraineeDTO;
 import com.example.springpr.gymapp.model.Trainee;
 
 import java.util.stream.Collectors;

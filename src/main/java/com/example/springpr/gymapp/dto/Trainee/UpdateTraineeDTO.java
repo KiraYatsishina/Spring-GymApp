@@ -1,4 +1,4 @@
-package com.example.springpr.gymapp.dto;
+package com.example.springpr.gymapp.dto.Trainee;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

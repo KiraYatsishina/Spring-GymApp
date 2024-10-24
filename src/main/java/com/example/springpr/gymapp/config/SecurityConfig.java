@@ -25,31 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private static final String[] WHITE_LIST_URL = {
-            "/GymApp", // all
-            "/GymApp/welcome", // all
-            "/GymApp/auth", // авторизация
-            "/GymApp/signup/trainee", // регистрация
-            "/GymApp/signup/trainer", // регистрация
-            "/GymApp/logout", // выход
-            "/GymApp/trainee/createProfile",
-            "/GymApp/trainee/myProfile",
-            "/GymApp/trainee/updateProfile",
-            "/GymApp/trainee/updateStatus",
-            "/GymApp/trainee/updateTrainersList",
-            "/GymApp/trainee/trainingsList",
-            "/GymApp/trainee/notAssignTrainersList",
-            "/GymApp/trainee/delete",
-
-            "/GymApp/trainer/createProfile",
-            "/GymApp/trainer/home",
-            "/GymApp/trainer/updateProfile",
-            "/GymApp/trainer/updateStatus",
-            "/GymApp/trainer/trainingsList",
-            "/GymApp/trainer/createTraining",
-            "/GymApp/trainer/delete"
-    };
-
     private UserService userService;
     private JwtRequestFilter jwtRequestFilter;
 

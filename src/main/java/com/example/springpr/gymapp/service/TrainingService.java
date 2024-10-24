@@ -9,6 +9,8 @@ import com.example.springpr.gymapp.repository.TrainerRepository;
 import com.example.springpr.gymapp.repository.TrainingRepository;
 import com.example.springpr.gymapp.repository.TrainingTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TrainingService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TrainingService.class); // Logger for tracking actions
+
     private final TrainingRepository trainingRepository;
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
@@ -39,13 +44,23 @@ public class TrainingService {
 
     public Training addTraining(CreateTrainingDTO request) throws Exception {
         Trainee trainee = traineeRepository.findByUsername(request.getTraineeUsername())
-                .orElseThrow(() -> new Exception("Trainee not found"));
+                .orElseThrow(() -> {
+                    logger.error("Trainee not found for username: {}", request.getTraineeUsername());
+                    return new Exception("Trainee not found");
+                });
 
         Trainer trainer = trainerRepository.findByUsername(request.getTrainerUsername())
-                .orElseThrow(() -> new Exception("Trainer not found"));
+                .orElseThrow(() -> {
+                    logger.error("Trainer not found for username: {}", request.getTrainerUsername());
+                    return new Exception("Trainer not found");
+                });
 
         TrainingType trainingType = trainingTypeRepository.findByTrainingTypeName(TrainingTypeEnum.valueOf(request.getType()))
-                .orElseThrow(() -> new Exception("Training type not found"));
+                .orElseThrow(() -> {
+                    logger.error("Training type not found for type: {}", request.getType());
+                    return new Exception("Training type not found");
+                });
+
 
         Training training = new Training();
         training.setTrainee(trainee);

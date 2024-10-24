@@ -10,5 +10,4 @@ public class HomePageController {
     String welcome(){
         return "Welcome to Gymapp";
     }
-
 }

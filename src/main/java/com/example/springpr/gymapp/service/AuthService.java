@@ -1,9 +1,7 @@
 package com.example.springpr.gymapp.service;
 
 import com.example.springpr.gymapp.Util.JwtCore;
-import com.example.springpr.gymapp.dto.JwtResponse;
 import com.example.springpr.gymapp.dto.UserDTO;
-import com.example.springpr.gymapp.exception.AppError;
 import com.example.springpr.gymapp.mapper.UserMapper;
 import com.example.springpr.gymapp.model.Role;
 import com.example.springpr.gymapp.model.Trainee;
@@ -13,6 +11,8 @@ import com.example.springpr.gymapp.repository.TraineeRepository;
 import com.example.springpr.gymapp.repository.TrainerRepository;
 import com.example.springpr.gymapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +30,8 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwtCore jwtTokenUtils;
@@ -40,13 +42,16 @@ public class AuthService {
 
     public ResponseEntity<?> createAuthToken(UserDTO authRequest) {
         try {
+            logger.info("Attempting authentication for user: {}", authRequest.getUsername());
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Неправильный логин или пароль"), HttpStatus.UNAUTHORIZED);
+            logger.warn("Failed login attempt for user: {}", authRequest.getUsername());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Неправильный логин или пароль");
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtils.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+        logger.info("Authentication successful for user: {}. Token generated.", authRequest.getUsername());
+        return ResponseEntity.ok(token);
     }
 
     public Optional<UserDTO> signUpTrainee(Trainee trainee) {
@@ -66,9 +71,14 @@ public class AuthService {
                 String encodedNewPassword = passwordEncoder.encode(newPassword);
                 user.setPassword(encodedNewPassword);
                 userRepository.save(user);
+                logger.info("Password for user {} successfully changed.", username);
                 return true;
-            } else return false;
+            } else {
+                logger.warn("Old password is incorrect for user {}.", username);
+                return false;
+            }
         }
+        logger.warn("User {} not found.", username);
         return false;
     }
 

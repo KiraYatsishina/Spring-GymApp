@@ -1,19 +1,15 @@
-package com.example.springpr.gymapp.dto;
+package com.example.springpr.gymapp.dto.Trainer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainerDTO {
-    private String username;
+public class UpdateTrainerDTO {
     private String firstName;
     private String lastName;
-    private boolean isActive;
     private String specialization;
-    private List<ShortTraineeDTO> trainees;
+    private boolean isActive;
 }

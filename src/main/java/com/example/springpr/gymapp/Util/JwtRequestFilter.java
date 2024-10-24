@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,9 +35,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtils.getUsername(jwt);
             } catch (ExpiredJwtException e) {
-                log.debug("Время жизни токена вышло");
+                log.debug("The token's lifetime is up");
             } catch (SignatureException e) {
-                log.debug("Подпись неправильная");
+                log.debug("The signature is wrong");
             }
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -48,6 +47,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     jwtTokenUtils.getRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
             );
             SecurityContextHolder.getContext().setAuthentication(token);
+            log.info("Authentication successfully set for user '{}'", username);
         }
         filterChain.doFilter(request, response);
     }

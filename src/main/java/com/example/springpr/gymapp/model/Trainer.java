@@ -25,7 +25,7 @@ public class Trainer extends User{
     @JoinColumn(name = "specialization")
     private TrainingType specialization;
 
-    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
     private List<Trainee> trainees = new ArrayList<>();
 
     @OneToMany(mappedBy = "trainer")

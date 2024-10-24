@@ -1,15 +1,17 @@
 package com.example.springpr.gymapp.service;
 
-import com.example.springpr.gymapp.dto.ShortTrainerDTO;
-import com.example.springpr.gymapp.dto.SignupTrainee;
-import com.example.springpr.gymapp.dto.TraineeDTO;
-import com.example.springpr.gymapp.dto.UpdateTraineeDTO;
+import com.example.springpr.gymapp.dto.Trainer.ShortTrainerDTO;
+import com.example.springpr.gymapp.dto.Trainee.SignupTrainee;
+import com.example.springpr.gymapp.dto.Trainee.TraineeDTO;
+import com.example.springpr.gymapp.dto.Trainee.UpdateTraineeDTO;
 import com.example.springpr.gymapp.mapper.TraineeMapper;
 import com.example.springpr.gymapp.mapper.TrainerMapper;
 import com.example.springpr.gymapp.model.Trainee;
 import com.example.springpr.gymapp.model.Trainer;
 import com.example.springpr.gymapp.repository.TraineeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TraineeService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TraineeService.class);
+
     private final TraineeRepository traineeRepository;
 
     public Optional<TraineeDTO> findByUsername(String username) {
@@ -30,6 +34,7 @@ public class TraineeService {
 
     public Trainee mapToEntity(SignupTrainee traineeDTO) {
         if (traineeDTO == null) {
+            logger.warn("SignupTrainee DTO is null");
             return null;
         }
         Trainee trainee = new Trainee();
