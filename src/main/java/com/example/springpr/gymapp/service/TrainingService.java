@@ -11,6 +11,7 @@ import com.example.springpr.gymapp.repository.TrainingTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,14 +23,18 @@ public class TrainingService {
     private final TrainerRepository trainerRepository;
     private final TrainingTypeRepository trainingTypeRepository;
 
-    public List<TrainingDTO> findByTraineeUsername(String username) {
-        List<Training> trainings = trainingRepository.findByTraineeUsername(username);
-        return trainings.stream().map(training -> TrainingMapper.toDTO(training, true)).collect(Collectors.toList());
+    public List<TrainingDTO> findByTraineeUsername(String username, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
+        return trainingRepository.findTraineeTrainings(username, fromDate, toDate, trainerName, trainingType)
+                .stream()
+                .map(training -> TrainingMapper.toDTO(training, true))
+                .collect(Collectors.toList());
     }
 
-    public List<TrainingDTO> findByTrainerUsername(String username) {
-        List<Training> trainings = trainingRepository.findByTrainerUsername(username);
-        return trainings.stream().map(training -> TrainingMapper.toDTO(training, false)).collect(Collectors.toList());
+    public List<TrainingDTO> findByTrainerUsername(String username, LocalDate fromDate, LocalDate toDate, String traineeName) {
+        return trainingRepository.findTrainerTrainings(username, fromDate, toDate, traineeName)
+                .stream()
+                .map(training -> TrainingMapper.toDTO(training, false))
+                .collect(Collectors.toList());
     }
 
     public Training addTraining(CreateTrainingDTO request) throws Exception {
