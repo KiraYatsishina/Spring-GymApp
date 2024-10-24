@@ -68,20 +68,17 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/GymApp", "/GymApp/auth",
-                                "/GymApp/signup/trainee", "/GymApp/signup/trainer",
-                                "/GymApp/welcome","/GymApp/logout").permitAll()
-                        .requestMatchers("/GymApp/trainee/**").hasRole("TRAINEE")
-                        .requestMatchers("/GymApp/trainer/**").hasRole("TRAINER")
-                        .anyRequest().permitAll()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .exceptionHandling(exception -> exception
+                        .requestMatchers( "/auth",
+                                "/signup/trainee", "/signup/trainer",
+                                "/welcome","/logout").permitAll()
+                        .requestMatchers("/trainee/**").hasRole("TRAINEE")
+                        .requestMatchers("/trainer/**").hasRole("TRAINER")
+                        .anyRequest().authenticated()
+                ).exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                ).sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                ).addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

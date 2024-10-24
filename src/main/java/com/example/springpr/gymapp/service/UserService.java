@@ -38,12 +38,22 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public boolean deleteUserByUsername(String username) {
-        Optional<User> trainee = userRepository.findByUsername(username);
-        if (trainee.isPresent()) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
             userRepository.deleteByUsername(username);
             return true;
         }
         return false;
     }
 
+    @Transactional
+    public boolean changeStatusByUsername(String username, boolean status) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            user.get().setActive(status);
+            userRepository.save(user.get());
+            return true;
+        }
+        return false;
+    }
 }

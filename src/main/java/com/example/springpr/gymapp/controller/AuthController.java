@@ -66,13 +66,13 @@ public class AuthController{
     @PostMapping("/trainee/changeLogin")
     ResponseEntity<?> changeLoginTrainee(Principal principal,
                                          @RequestBody ChangeLoginRequest request) {
-        return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), Role.TRAINEE);
+        return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), Role.ROLE_TRAINEE);
     }
 
     @PostMapping("/trainer/changeLogin")
     ResponseEntity<?> changeLoginTrainer(Principal principal,
                                          @RequestBody ChangeLoginRequest request) {
-        return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), Role.TRAINER);
+        return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), Role.ROLE_TRAINER);
     }
 
     private ResponseEntity<?> changeLogin(Principal principal, String oldPassword, String newPassword, Role role) {
@@ -80,7 +80,6 @@ public class AuthController{
         String username = principal.getName();
         Optional<User> userOptional = userService.findByUsername(username);
         if (!userOptional.isPresent())  return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Something went wrong");
-        if (userOptional.get().getRole() != role)  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission");
         boolean changed = authService.changePassword(username, oldPassword, newPassword);
         if (changed) return ResponseEntity.status(HttpStatus.OK).build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
+    User save(User user);
+
     @Query("SELECT COUNT(u) FROM User u WHERE u.firstName = :firstName AND u.lastName = :lastName")
     long countByFirstNameAndLastName(@Param("firstName") String firstName, @Param("lastName") String lastName);
 

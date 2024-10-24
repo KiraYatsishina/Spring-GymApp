@@ -49,13 +49,12 @@ public class AuthService {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-
     public Optional<UserDTO> signUpTrainee(Trainee trainee) {
-        return signUpUser(trainee, Role.TRAINEE, traineeRepository::save);
+        return signUpUser(trainee, Role.ROLE_TRAINEE, traineeRepository::save);
     }
 
     public Optional<UserDTO> signUpTrainer(Trainer trainer) {
-        return signUpUser(trainer, Role.TRAINER, trainerRepository::save);
+        return signUpUser(trainer, Role.ROLE_TRAINER, trainerRepository::save);
     }
 
     public boolean changePassword(String username, String oldPassword, String newPassword) {
@@ -84,7 +83,7 @@ public class AuthService {
         user.setRole(role);
         user.setActive(true);
 
-        T savedUser = saveFunction.apply(user); // вот тут падает
+        T savedUser = saveFunction.apply(user);
 
         UserDTO userDTO = UserMapper.toDTO(savedUser);
         userDTO.setPassword(generatedPassword);

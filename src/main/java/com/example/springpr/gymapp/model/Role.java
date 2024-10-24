@@ -1,5 +1,5 @@
 package com.example.springpr.gymapp.model;
 
 public enum Role {
-    TRAINEE, TRAINER
+    ROLE_TRAINEE, ROLE_TRAINER
 }

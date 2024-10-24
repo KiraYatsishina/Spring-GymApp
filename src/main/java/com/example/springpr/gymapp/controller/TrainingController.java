@@ -33,8 +33,6 @@ public class TrainingController {
                                                     @RequestParam(required = false) String trainingType) {
         if (principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String username = principal.getName();
-        Optional<User> userOptional = userService.findByUsername(username);
-        if(userOptional.get().getRole() != Role.TRAINEE) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission");
         List<TrainingDTO> trainings = trainingService.findByTraineeUsername(username, fromDate, toDate, trainerName, trainingType);
         return new ResponseEntity<>(trainings, HttpStatus.OK);
     }
@@ -46,8 +44,6 @@ public class TrainingController {
                                                     @RequestParam(required = false) String traineeName) {
         if (principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String username = principal.getName();
-        Optional<User> userOptional = userService.findByUsername(username);
-        if(userOptional.get().getRole() != Role.TRAINER) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission");
         List<TrainingDTO> trainings = trainingService.findByTrainerUsername(username, fromDate, toDate, traineeName);
         return new ResponseEntity<>(trainings, HttpStatus.OK);
     }
@@ -57,8 +53,6 @@ public class TrainingController {
     public ResponseEntity<?> addTraining(Principal principal, @RequestBody CreateTrainingDTO createTrainingDTO) {
         if (principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String username = principal.getName();
-        Optional<User> userOptional = userService.findByUsername(username);
-        if(userOptional.get().getRole() != Role.TRAINER) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission");
         Training training = null;
         try {
             training = trainingService.addTraining(createTrainingDTO);

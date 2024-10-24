@@ -50,4 +50,7 @@ public class TrainerController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something with request");
     }
+
+    //@PutMapping("/updateTrainersList")
+
 }
