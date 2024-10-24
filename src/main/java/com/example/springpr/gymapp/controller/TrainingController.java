@@ -1,7 +1,10 @@
 package com.example.springpr.gymapp.controller;
 
+import com.example.springpr.gymapp.dto.CreateTrainingDTO;
 import com.example.springpr.gymapp.dto.TrainingDTO;
+import com.example.springpr.gymapp.mapper.TrainingMapper;
 import com.example.springpr.gymapp.model.Role;
+import com.example.springpr.gymapp.model.Training;
 import com.example.springpr.gymapp.model.User;
 import com.example.springpr.gymapp.service.TrainingService;
 import com.example.springpr.gymapp.service.UserService;
@@ -38,5 +41,18 @@ public class TrainingController {
 
        List<TrainingDTO> trainings = role.equals(Role.TRAINEE) ? trainingService.findByTraineeUsername(username) : trainingService.findByTrainerUsername(username);
         return new ResponseEntity<>(trainings, HttpStatus.OK);
+    }
+
+    @PostMapping("trainer/addTraining")
+    public ResponseEntity<?> addTraining(Principal principal, @RequestBody CreateTrainingDTO createTrainingDTO) {
+        if (principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        String username = principal.getName();
+        Optional<User> userOptional = userService.findByUsername(username);
+        if(userOptional.get().getRole() != Role.TRAINER) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission");
+        Training training = null;
+        try {
+            training = trainingService.addTraining(createTrainingDTO);
+        }catch (Exception e) { return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); }
+        return ResponseEntity.status(HttpStatus.OK).body(TrainingMapper.toDTO(training, false));
     }
 }

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface TrainingRepository extends JpaRepository<Training, Long> {
 
+    Training save(Training training);
+
     @Query("SELECT t FROM Training t WHERE t.trainee.username = :username")
     List<Training> findByTraineeUsername(@Param("username") String username);
 
