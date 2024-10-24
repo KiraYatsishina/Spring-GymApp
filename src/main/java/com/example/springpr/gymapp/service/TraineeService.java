@@ -64,4 +64,18 @@ public class TraineeService {
         return notAssignedTrainers.stream()
                 .map(TrainerMapper::toShortDTO).collect(Collectors.toList());
     }
+
+    @Transactional
+    public List<ShortTrainerDTO> updateTraineeTrainers(String traineeUsername, List<String> trainerUsernames) {
+        Trainee trainee = traineeRepository.findByUsername(traineeUsername)
+                .orElseThrow(() -> new RuntimeException("Trainee not found"));
+
+        List<Trainer> trainers = traineeRepository.findByUsernameIn(trainerUsernames);
+
+        trainee.setTrainers(trainers);
+        traineeRepository.save(trainee);
+
+        return trainers.stream()
+                .map(TrainerMapper::toShortDTO).collect(Collectors.toList());
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.springpr.gymapp.controller;
 
+import com.example.springpr.gymapp.dto.ShortTrainerDTO;
 import com.example.springpr.gymapp.dto.TrainerDTO;
 import com.example.springpr.gymapp.dto.UpdateTrainerDTO;
 import com.example.springpr.gymapp.mapper.TrainerMapper;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -51,6 +53,5 @@ public class TrainerController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something with request");
     }
 
-    //@PutMapping("/updateTrainersList")
 
 }

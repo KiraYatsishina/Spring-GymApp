@@ -16,4 +16,7 @@ public interface TraineeRepository extends JpaRepository<Trainee, Long>{
 
     @Query("SELECT t FROM Trainer t WHERE t NOT IN (SELECT tr FROM Trainee tra JOIN tra.trainers tr WHERE tra.userId = :userId)")
     List<Trainer> findNotAssignedTrainers(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM Trainer t WHERE t.username IN :usernames")
+    List<Trainer> findByUsernameIn(List<String> usernames);
 }

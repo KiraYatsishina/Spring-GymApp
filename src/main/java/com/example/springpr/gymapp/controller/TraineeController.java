@@ -9,7 +9,6 @@ import com.example.springpr.gymapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,5 +75,14 @@ public class TraineeController {
         }
         List<ShortTrainerDTO> unassignedTrainers = traineeService.getNotAssignedTrainersList(username);
         return ResponseEntity.ok(unassignedTrainers);
+    }
+
+    @PutMapping("/updateTrainersList")
+    public ResponseEntity<?> updateTrainersList(Principal principal, @RequestBody List<String> trainerUsernames) {
+        if(principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        String username = principal.getName();
+        List<ShortTrainerDTO> updatedTrainers = traineeService.updateTraineeTrainers(username, trainerUsernames);
+
+        return ResponseEntity.ok(updatedTrainers);
     }
 }
