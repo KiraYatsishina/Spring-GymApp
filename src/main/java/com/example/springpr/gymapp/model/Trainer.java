@@ -25,7 +25,7 @@ public class Trainer extends User{
     @JoinColumn(name = "specialization")
     private TrainingType specialization;
 
-    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Trainee> trainees = new ArrayList<>();
 
     @OneToMany(mappedBy = "trainer")
@@ -55,5 +55,12 @@ public class Trainer extends User{
                 .getPersistentClass()
                 .hashCode()
                 : getClass().hashCode();
+    }
+
+    @PreRemove
+    private void nullifyTrainerInTrainings() {
+        for (Training training : trainings) {
+            training.setTrainer(null);
+        }
     }
 }

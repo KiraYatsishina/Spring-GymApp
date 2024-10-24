@@ -63,13 +63,13 @@ public class AuthController{
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
     }
 
-    @PostMapping("/trainee/changeLogin")
+    @PutMapping("/trainee/changeLogin")
     ResponseEntity<?> changeLoginTrainee(Principal principal,
                                          @RequestBody ChangeLoginRequest request) {
         return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), Role.ROLE_TRAINEE);
     }
 
-    @PostMapping("/trainer/changeLogin")
+    @PutMapping("/trainer/changeLogin")
     ResponseEntity<?> changeLoginTrainer(Principal principal,
                                          @RequestBody ChangeLoginRequest request) {
         return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), Role.ROLE_TRAINER);
