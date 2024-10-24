@@ -27,10 +27,6 @@ public class UserController {
     @DeleteMapping({"/trainer/delete", "/trainee/delete"})
     private ResponseEntity<?> deleteUser(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access attempt to delete a user.", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Request to delete user: {}", transactionId, username);
 
@@ -54,10 +50,6 @@ public class UserController {
     @PatchMapping({"/trainee/changeStatus", "/trainer/changeStatus"})
     private ResponseEntity<?> changeStatus(Principal principal, @RequestParam(required = true) boolean status){
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access attempt to change user status.", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Request to change status of user: {}, New status: {}", transactionId, username, status);
 

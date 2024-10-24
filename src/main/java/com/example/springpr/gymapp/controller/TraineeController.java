@@ -34,11 +34,6 @@ public class TraineeController {
     @GetMapping("/myProfile")
     public ResponseEntity<TraineeDTO> getMyProfile(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /myProfile", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /myProfile, Request received for user: {}", transactionId, username);
         Optional<TraineeDTO> traineeDTOOptional = traineeService.findByUsername(username);
@@ -55,10 +50,6 @@ public class TraineeController {
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateTraineeProfile(Principal principal, @RequestBody UpdateTraineeDTO updateTraineeDTO) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /updateProfile", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /updateProfile, Request received for user: {}", transactionId, username);
 
@@ -92,10 +83,6 @@ public class TraineeController {
     @GetMapping("/notAssignedTrainersList")
     public ResponseEntity<List<ShortTrainerDTO>> getNotAssignedTrainersList(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
-        if(principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /notAssignedTrainersList", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /notAssignedTrainersList, Request received for Trainee: {}", transactionId, username);
         Optional<TraineeDTO> traineeDTOOptional = traineeService.findByUsername(username);
@@ -111,10 +98,6 @@ public class TraineeController {
     @PutMapping("/updateTrainersList")
     public ResponseEntity<?> updateTrainersList(Principal principal, @RequestBody List<String> trainerUsernames) {
         String transactionId = UUID.randomUUID().toString();
-        if(principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /updateTrainersList", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /updateTrainersList, Request received for user: {}", transactionId, username);
         List<ShortTrainerDTO> updatedTrainers = traineeService.updateTraineeTrainers(username, trainerUsernames);

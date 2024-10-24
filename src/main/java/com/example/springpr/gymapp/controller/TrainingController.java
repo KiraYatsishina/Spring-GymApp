@@ -33,10 +33,6 @@ public class TrainingController {
                                                     @RequestParam(required = false) String trainerName,
                                                     @RequestParam(required = false) String trainingType) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /trainee/trainingList", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /trainee/trainingList, Request received for trainee: {}", transactionId, username);
         List<TrainingDTO> trainings = trainingService.findByTraineeUsername(username, fromDate, toDate, trainerName, trainingType);
@@ -50,10 +46,6 @@ public class TrainingController {
                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
                                                     @RequestParam(required = false) String traineeName) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /trainer/trainingList", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /trainer/trainingList, Request received for trainer: {}", transactionId, username);
         List<TrainingDTO> trainings = trainingService.findByTrainerUsername(username, fromDate, toDate, traineeName);
@@ -64,10 +56,6 @@ public class TrainingController {
     @PostMapping("trainer/addTraining")
     public ResponseEntity<?> addTraining(Principal principal, @RequestBody CreateTrainingDTO createTrainingDTO) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /trainer/addTraining", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /trainer/addTraining, Request received to add training by trainer: {}", transactionId, username);
 

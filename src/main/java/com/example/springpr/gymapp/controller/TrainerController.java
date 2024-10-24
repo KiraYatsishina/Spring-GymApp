@@ -28,10 +28,6 @@ public class TrainerController {
     @GetMapping("/myProfile")
     public ResponseEntity<TrainerDTO> getMyProfile(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /myProfile", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /myProfile, Request received for user: {}", transactionId, username);
         Optional<TrainerDTO> trainerDTOOptional = trainerService.findByUsername(username);
@@ -48,10 +44,6 @@ public class TrainerController {
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateTrainerProfile(Principal principal, @RequestBody UpdateTrainerDTO updateTrainerDTO) {
         String transactionId = UUID.randomUUID().toString();
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized access to /updateProfile", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /updateProfile, Request received for user: {}", transactionId, username);
         if (updateTrainerDTO.getFirstName() == null || updateTrainerDTO.getFirstName().isEmpty()) {

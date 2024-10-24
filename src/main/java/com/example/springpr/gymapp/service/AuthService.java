@@ -40,7 +40,7 @@ public class AuthService {
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
 
-    public ResponseEntity<?> createAuthToken(UserDTO authRequest) {
+    public ResponseEntity<String> createAuthToken(UserDTO authRequest) {
         try {
             logger.info("Attempting authentication for user: {}", authRequest.getUsername());
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));

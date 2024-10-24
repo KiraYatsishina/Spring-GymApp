@@ -111,10 +111,6 @@ public class AuthController{
     }
 
     private ResponseEntity<?> changeLogin(Principal principal, String oldPassword, String newPassword, String transactionId) {
-        if (principal == null) {
-            logger.warn("Transaction ID: {}, Unauthorized attempt to change login", transactionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         String username = principal.getName();
         logger.info("Transaction ID: {}, Changing login for user: {}", transactionId, username);
         Optional<User> userOptional = userService.findByUsername(username);
