@@ -2,12 +2,14 @@ package com.example.springpr.gymapp.service;
 
 import com.example.springpr.gymapp.dto.SignupTrainer;
 import com.example.springpr.gymapp.dto.TrainerDTO;
+import com.example.springpr.gymapp.dto.UpdateTrainerDTO;
 import com.example.springpr.gymapp.mapper.TrainerMapper;
 import com.example.springpr.gymapp.model.*;
 import com.example.springpr.gymapp.repository.TrainerRepository;
 import com.example.springpr.gymapp.repository.TrainingTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -46,5 +48,33 @@ public class TrainerService {
         trainer.setSpecialization(trainingType);
 
         return trainer;
+    }
+
+    @Transactional
+    public Optional<Trainer> updateTrainerProfile(String username, UpdateTrainerDTO updateTrainerDTO) {
+        Optional<Trainer> trainerOptional = trainerRepository.findByUsername(username);
+        if (trainerOptional.isPresent()) {
+            Trainer trainer = trainerOptional.get();
+            trainer.setFirstName(updateTrainerDTO.getFirstName());
+            trainer.setLastName(updateTrainerDTO.getLastName());
+
+            TrainingTypeEnum specializationEnum;
+            try {
+                specializationEnum = TrainingTypeEnum.valueOf(updateTrainerDTO.getSpecialization().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return Optional.empty();
+            }
+
+            Optional<TrainingType> specialization = trainingTypeRepository.findByTrainingTypeName(specializationEnum);
+            if (specialization.isPresent()) {
+                trainer.setSpecialization(specialization.get());
+            } else {
+                return Optional.empty();
+            }
+
+            trainer.setActive(updateTrainerDTO.isActive());
+            return Optional.of(trainerRepository.save(trainer));
+        }
+        return Optional.empty();
     }
 }

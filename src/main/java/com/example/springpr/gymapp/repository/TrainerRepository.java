@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface TrainerRepository extends JpaRepository<Trainer, Long> {
     Optional<Trainer> findByUsername(String username);
     Trainer save(Trainer trainer);
+
 }

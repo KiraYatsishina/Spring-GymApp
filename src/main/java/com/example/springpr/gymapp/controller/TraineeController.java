@@ -48,10 +48,6 @@ public class TraineeController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("First Name is required");
         if (updateTraineeDTO.getLastName() == null || updateTraineeDTO.getLastName().isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Last Name is required");
-        if (updateTraineeDTO.getDateOfBirth() == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Date of Birth is required");
-        if (updateTraineeDTO.getAddress() == null || updateTraineeDTO.getAddress().isEmpty())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Address is required");
 
         Optional<Trainee> updatedTrainee = traineeService.updateTraineeProfile(username, updateTraineeDTO);
         if (updatedTrainee.isPresent()) {
@@ -65,7 +61,7 @@ public class TraineeController {
             return ResponseEntity.ok(response);
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainee not found");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something with request");
     }
 
 

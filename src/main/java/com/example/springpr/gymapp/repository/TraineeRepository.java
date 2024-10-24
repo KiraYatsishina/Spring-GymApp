@@ -14,9 +14,6 @@ public interface TraineeRepository extends JpaRepository<Trainee, Long>{
 
     Trainee save(Trainee trainee);
 
-    @Query("SELECT COUNT(u) FROM User u WHERE u.firstName = :firstName AND u.lastName = :lastName")
-    long countByFirstNameAndLastName(@Param("firstName") String firstName, @Param("lastName") String lastName);
-
     @Query("SELECT t FROM Trainer t WHERE t NOT IN (SELECT tr FROM Trainee tra JOIN tra.trainers tr WHERE tra.userId = :userId)")
     List<Trainer> findNotAssignedTrainers(@Param("userId") Long userId);
 }

@@ -40,8 +40,20 @@ public class TraineeService {
         return trainee;
     }
 
+    @Transactional
     public Optional<Trainee> updateTraineeProfile(String username, UpdateTraineeDTO updateTraineeDTO) {
-        return null;
+        Optional<Trainee> traineeOptional = traineeRepository.findByUsername(username);
+        if (traineeOptional.isPresent()) {
+            Trainee trainee = traineeOptional.get();
+
+            trainee.setFirstName(updateTraineeDTO.getFirstName());
+            trainee.setLastName(updateTraineeDTO.getLastName());
+            trainee.setDateOfBirth(updateTraineeDTO.getDateOfBirth());
+            trainee.setAddress(updateTraineeDTO.getAddress());
+            trainee.setActive(updateTraineeDTO.isActive());
+            return Optional.of(traineeRepository.save(trainee));
+        }
+        return Optional.empty();
     }
 
     @Transactional
