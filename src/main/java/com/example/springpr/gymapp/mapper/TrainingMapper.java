@@ -3,7 +3,6 @@ package com.example.springpr.gymapp.mapper;
 import com.example.springpr.gymapp.dto.TrainingDTO;
 import com.example.springpr.gymapp.model.Training;
 
-import java.util.stream.Collectors;
 
 public class TrainingMapper {
     public static TrainingDTO toDTO(Training training, boolean isTrainee) {

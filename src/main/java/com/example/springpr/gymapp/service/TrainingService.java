@@ -55,7 +55,15 @@ public class TrainingService {
                     return new Exception("Trainer not found");
                 });
 
-        TrainingType trainingType = trainingTypeRepository.findByTrainingTypeName(TrainingTypeEnum.valueOf(request.getType()))
+        TrainingTypeEnum trainingTypeEnum;
+        try {
+            trainingTypeEnum = TrainingTypeEnum.valueOf(request.getType());
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid training type: {}", request.getType());
+            throw new Exception("Training type not found");
+        }
+
+        TrainingType trainingType = trainingTypeRepository.findByTrainingTypeName(trainingTypeEnum)
                 .orElseThrow(() -> {
                     logger.error("Training type not found for type: {}", request.getType());
                     return new Exception("Training type not found");

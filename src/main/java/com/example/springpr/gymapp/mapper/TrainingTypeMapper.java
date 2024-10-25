@@ -1,8 +1,6 @@
 package com.example.springpr.gymapp.mapper;
 
-import com.example.springpr.gymapp.dto.TrainingDTO;
 import com.example.springpr.gymapp.dto.TrainingTypeDTO;
-import com.example.springpr.gymapp.model.Training;
 import com.example.springpr.gymapp.model.TrainingType;
 
 public class TrainingTypeMapper {

@@ -25,13 +25,13 @@ public class UserController {
     private final UserService userService;
 
     @DeleteMapping({"/trainer/delete", "/trainee/delete"})
-    private ResponseEntity<?> deleteUser(Principal principal) {
+    public ResponseEntity<?> deleteUser(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
         logger.info("Transaction ID: {}, Request to delete user: {}", transactionId, username);
 
         Optional<User> userOptional = userService.findByUsername(username);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             logger.warn("Transaction ID: {}, User {} not found.", transactionId, username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
@@ -48,13 +48,13 @@ public class UserController {
 
 
     @PatchMapping({"/trainee/changeStatus", "/trainer/changeStatus"})
-    private ResponseEntity<?> changeStatus(Principal principal, @RequestParam(required = true) boolean status){
+    public ResponseEntity<?> changeStatus(Principal principal, @RequestParam boolean status){
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
         logger.info("Transaction ID: {}, Request to change status of user: {}, New status: {}", transactionId, username, status);
 
         Optional<User> userOptional = userService.findByUsername(username);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             logger.warn("Transaction ID: {}, User {} not found.", transactionId, username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
