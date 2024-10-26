@@ -24,7 +24,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @DeleteMapping({"/trainer/delete", "/trainee/delete"})
+    @DeleteMapping("/trainee/delete")
     public ResponseEntity<?> deleteUser(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
