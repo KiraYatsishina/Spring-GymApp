@@ -16,5 +16,4 @@ public class CreateTrainingDTO {
     private LocalDate date;
     private String type;
     private int duration;
-    private String personName;
 }

@@ -1,19 +1,24 @@
 package com.example.springpr.gymapp.controller;
 
-import com.example.springpr.gymapp.Util.JwtCore;
 import com.example.springpr.gymapp.dto.Trainee.TraineeDTO;
 import com.example.springpr.gymapp.dto.Trainee.UpdateTraineeDTO;
 import com.example.springpr.gymapp.dto.Trainer.ShortTrainerDTO;
 import com.example.springpr.gymapp.mapper.TraineeMapper;
 import com.example.springpr.gymapp.model.Trainee;
 import com.example.springpr.gymapp.service.TraineeService;
-import com.example.springpr.gymapp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,16 +28,23 @@ import java.util.*;
 @RestController
 @RequestMapping("/trainee")
 @RequiredArgsConstructor
+@Tag(name = "Trainee Controller", description = "Endpoints for trainee profile management")
 public class TraineeController {
 
     private static final Logger logger = LoggerFactory.getLogger(TraineeController.class);
 
-    private final UserService userService;
     private final TraineeService traineeService;
-    private final JwtCore jwtCore;
 
     @GetMapping("/myProfile")
-    public ResponseEntity<TraineeDTO> getMyProfile(Principal principal) {
+    @Operation(summary = "Retrieve trainee profile", description = "Fetches the profile information for the authenticated trainee.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = TraineeDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Trainee profile not found", content = @Content)
+    })
+    public ResponseEntity<TraineeDTO> getMyProfile(
+            @Parameter(description = "Principal representing the authenticated trainee", required = true)
+            Principal principal) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /myProfile, Request received for user: {}", transactionId, username);
@@ -48,6 +60,13 @@ public class TraineeController {
     }
 
     @PutMapping("/updateProfile")
+    @Operation(summary = "Update trainee profile", description = "Updates the profile information of the authenticated trainee.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile updated successfully",
+                    content = @Content(schema = @Schema(implementation = TraineeDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Trainee not found", content = @Content)
+    })
     public ResponseEntity<?> updateTraineeProfile(Principal principal, @RequestBody UpdateTraineeDTO updateTraineeDTO) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
@@ -64,23 +83,23 @@ public class TraineeController {
 
         Optional<Trainee> updatedTrainee = traineeService.updateTraineeProfile(username, updateTraineeDTO);
         if (updatedTrainee.isPresent()) {
-            UserDetails userDetails = userService.loadUserByUsername(updatedTrainee.get().getUsername());
-            String newToken = jwtCore.generateToken(userDetails);
             TraineeDTO traineeDTO = TraineeMapper.toDTO(updatedTrainee.get(), true);
-            Map<String, Object> response = new HashMap<>();
-            response.put("token", newToken);
-            response.put("trainee", traineeDTO);
-
             logger.info("Transaction ID: {}, Profile updated successfully for user: {}", transactionId, username);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(traineeDTO);
         }
 
-        logger.error("Transaction ID: {}, Failed to update profile for user: {}", transactionId, username);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something with request");
+        logger.warn("Transaction ID: {}, Trainee not found for user: {}", transactionId, username);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainee not found");
     }
 
 
     @GetMapping("/notAssignedTrainersList")
+    @Operation(summary = "Get not assigned trainers list", description = "Retrieves a list of trainers not assigned to the trainee.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Unassigned trainers list retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ShortTrainerDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Trainee not found", content = @Content)
+    })
     public ResponseEntity<List<ShortTrainerDTO>> getNotAssignedTrainersList(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
@@ -96,6 +115,13 @@ public class TraineeController {
     }
 
     @PutMapping("/updateTrainersList")
+    @Operation(summary = "Update trainee's trainers list", description = "Updates the list of trainers assigned to the trainee.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Trainers list updated successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ShortTrainerDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid trainer usernames", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Trainee not found", content = @Content)
+    })
     public ResponseEntity<?> updateTrainersList(Principal principal, @RequestBody List<String> trainerUsernames) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();

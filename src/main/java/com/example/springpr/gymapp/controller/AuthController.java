@@ -5,17 +5,21 @@ import com.example.springpr.gymapp.dto.Trainee.SignupTrainee;
 import com.example.springpr.gymapp.dto.Trainer.SignupTrainer;
 import com.example.springpr.gymapp.model.Trainee;
 import com.example.springpr.gymapp.model.Trainer;
-import com.example.springpr.gymapp.model.User;
 import com.example.springpr.gymapp.service.AuthService;
 import com.example.springpr.gymapp.service.TraineeService;
 import com.example.springpr.gymapp.service.TrainerService;
 import com.example.springpr.gymapp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Authentication Controller", description = "Handles user authentication and registration")
 public class AuthController{
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -34,7 +39,14 @@ public class AuthController{
     private final TrainerService trainerService;
     private final UserService userService;
 
+
     @PostMapping("/auth")
+    @Operation(summary = "Authenticate user", description = "Generates an authentication token for a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User authenticated successfully",
+                    content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "Invalid credentials", content = @Content)
+    })
     public ResponseEntity<?> createAuthToken(@RequestBody UserDTO authRequest) {
         String transactionId = UUID.randomUUID().toString();
         logger.info("Transaction ID: {}, Endpoint: /auth, Request received: {}", transactionId, authRequest.getUsername());
@@ -44,7 +56,13 @@ public class AuthController{
         return response;
     }
 
-    @PostMapping("/signup/trainee") // регистрация
+    @PostMapping("/signup/trainee")
+    @Operation(summary = "Register a new trainee", description = "Registers a new trainee user in the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Trainee registered successfully",
+                    content = @Content(schema = @Schema(implementation = UserDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid trainee data", content = @Content)
+    })
     ResponseEntity<?> signup(@RequestBody SignupTrainee traineeDTO) {
         String transactionId = UUID.randomUUID().toString();
         logger.info("Transaction ID: {}, Endpoint: /signup/trainee, Request received: {}", transactionId, traineeDTO);
@@ -68,7 +86,13 @@ public class AuthController{
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
     }
 
-    @PostMapping("/signup/trainer") // регистрация
+    @PostMapping("/signup/trainer")
+    @Operation(summary = "Register a new trainer", description = "Registers a new trainer user in the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Trainer registered successfully",
+                    content = @Content(schema = @Schema(implementation = UserDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid trainer data", content = @Content)
+    })
     ResponseEntity<?> signup(@RequestBody SignupTrainer trainerDTO) {
         String transactionId = UUID.randomUUID().toString();
         logger.info("Transaction ID: {}, Endpoint: /signup/trainer, Request received: {}", transactionId, trainerDTO);
@@ -92,40 +116,26 @@ public class AuthController{
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong");
     }
 
-    @PutMapping("/trainee/changeLogin")
-    ResponseEntity<?> changeLoginTrainee(Principal principal,
-                                         @RequestBody ChangeLoginRequest request) {
+    @PutMapping("/changeLogin")
+    @Operation(summary = "Change user's login", description = "Allows a user to change their login credentials")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login changed successfully", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
+    })
+    public ResponseEntity<?> changeLogin(Principal principal, @RequestBody ChangeLoginRequest request) {
         String transactionId = UUID.randomUUID().toString();
-        logger.info("Transaction ID: {}, Endpoint: /trainee/changeLogin, Request received: {}", transactionId, principal.getName());
-
-        return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), transactionId);
-    }
-
-    @PutMapping("/trainer/changeLogin")
-    ResponseEntity<?> changeLoginTrainer(Principal principal,
-                                         @RequestBody ChangeLoginRequest request) {
-        String transactionId = UUID.randomUUID().toString();
-        logger.info("Transaction ID: {}, Endpoint: /trainer/changeLogin, Request received: {}", transactionId, principal.getName());
-
-        return changeLogin(principal, request.getOldPassword(), request.getNewPassword(), transactionId);
-    }
-
-    private ResponseEntity<?> changeLogin(Principal principal, String oldPassword, String newPassword, String transactionId) {
         String username = principal.getName();
-        logger.info("Transaction ID: {}, Changing login for user: {}", transactionId, username);
-        Optional<User> userOptional = userService.findByUsername(username);
-        if (!userOptional.isPresent()) {
-            logger.error("Transaction ID: {}, User not found: {}", transactionId, username);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-        boolean changed = authService.changePassword(username, oldPassword, newPassword);
+        logger.info("Transaction ID: {}, Endpoint: /changeLogin, Request received for user: {}", transactionId, username);
+
+        boolean changed = authService.changePassword(username, request.getOldPassword(), request.getNewPassword());
         if (changed) {
             logger.info("Transaction ID: {}, Password changed successfully for user: {}", transactionId, username);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
         logger.warn("Transaction ID: {}, Failed to change password for user: {}", transactionId, username);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid credentials or user not found");
     }
 
 }

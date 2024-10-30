@@ -29,8 +29,8 @@ public class Trainee extends User {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "trainee_trainer",
-            joinColumns = @JoinColumn(name = "trainee_id"),
-            inverseJoinColumns = @JoinColumn(name = "trainer_id")
+            joinColumns = @JoinColumn(name = "trainee_id", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "trainer_id", referencedColumnName = "user_id")
     )
     private List<Trainer> trainers = new ArrayList<>();
 

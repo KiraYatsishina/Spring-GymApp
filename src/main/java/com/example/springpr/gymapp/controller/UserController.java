@@ -2,6 +2,11 @@ package com.example.springpr.gymapp.controller;
 
 import com.example.springpr.gymapp.model.User;
 import com.example.springpr.gymapp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "User Controller")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -25,6 +31,11 @@ public class UserController {
     private final UserService userService;
 
     @DeleteMapping("/trainee/delete")
+    @Operation(summary = "Delete user profile", description = "Deletes the profile of the authenticated user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User profile deleted successfully.", content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found.", content = @Content)
+    })
     public ResponseEntity<?> deleteUser(Principal principal) {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
@@ -48,6 +59,11 @@ public class UserController {
 
 
     @PatchMapping({"/trainee/changeStatus", "/trainer/changeStatus"})
+    @Operation(summary = "Change user status", description = "Changes the status of the authenticated user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User status changed successfully.", content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found.", content = @Content)
+    })
     public ResponseEntity<?> changeStatus(Principal principal, @RequestParam boolean status){
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();

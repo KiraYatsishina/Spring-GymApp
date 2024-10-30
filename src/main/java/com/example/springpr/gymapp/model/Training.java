@@ -25,11 +25,11 @@ public class Training {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE, optional = false)
-    @JoinColumn(name = "trainee_id")
+    @JoinColumn(name = "trainee_id", referencedColumnName = "user_id")
     private Trainee trainee;
 
     @ManyToOne(cascade = CascadeType.MERGE, optional = false)
-    @JoinColumn(name = "trainer_id")
+    @JoinColumn(name = "trainer_id", referencedColumnName = "user_id")
     @JsonManagedReference
     private Trainer trainer;
 
