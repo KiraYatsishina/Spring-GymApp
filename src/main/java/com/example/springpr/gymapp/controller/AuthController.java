@@ -120,8 +120,7 @@ public class AuthController{
     @Operation(summary = "Change user's login", description = "Allows a user to change their login credentials")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login changed successfully", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
     })
     public ResponseEntity<?> changeLogin(Principal principal, @RequestBody ChangeLoginRequest request) {
         String transactionId = UUID.randomUUID().toString();

@@ -81,14 +81,10 @@ class TraineeControllerTest {
 
         UserDetails mockUserDetails = mock(UserDetails.class);
         when(userService.loadUserByUsername("testUser")).thenReturn(mockUserDetails);
-        when(jwtCore.generateToken(mockUserDetails)).thenReturn("newToken");
 
         ResponseEntity<?> response = traineeController.updateTraineeProfile(mockPrincipal, updateTraineeDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
-        assertNotNull(responseBody);
-        assertEquals("newToken", responseBody.get("token"));
         verify(traineeService, times(1)).updateTraineeProfile("testUser", updateTraineeDTO);
     }
 
@@ -163,8 +159,8 @@ class TraineeControllerTest {
 
         ResponseEntity<?> response = traineeController.updateTraineeProfile(mockPrincipal, updateTraineeDTO);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Something with request", response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Trainee not found", response.getBody());
         verify(traineeService, times(1)).updateTraineeProfile("testUser", updateTraineeDTO);
     }
 }

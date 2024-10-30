@@ -254,10 +254,9 @@ public class AuthControllerTest {
 
         Principal principal = () -> username;
 
-        when(userService.findByUsername(username)).thenReturn(Optional.of(new User()));
         when(authService.changePassword(username, oldPassword, newPassword)).thenReturn(true);
 
-        mockMvc.perform(put("/trainee/changeLogin")
+        mockMvc.perform(put("/changeLogin")
                         .principal(principal)  // Устанавливаем Principal
                         .contentType("application/json")
                         .content("{\"oldPassword\":\"" + oldPassword + "\",\"newPassword\":\"" + newPassword + "\"}"))
@@ -266,20 +265,18 @@ public class AuthControllerTest {
 
     //changeLoginTrainee
     @Test
-    void changeLoginTrainer_shouldReturnNotFound_whenUserDoesNotExist() throws Exception {
+    void changeLoginTrainer_shouldReturnBadRequest_whenUserDoesNotExist() throws Exception {
         String username = "nonExistingUser";
         String oldPassword = "oldPassword";
         String newPassword = "newPassword";
 
         Principal principal = () -> username;
 
-        when(userService.findByUsername(username)).thenReturn(Optional.empty());
-
-        mockMvc.perform(put("/trainer/changeLogin")
+        mockMvc.perform(put("/changeLogin")
                         .principal(principal)
                         .contentType("application/json")
                         .content("{\"oldPassword\":\"" + oldPassword + "\",\"newPassword\":\"" + newPassword + "\"}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -290,10 +287,9 @@ public class AuthControllerTest {
 
         Principal principal = () -> username;
 
-        when(userService.findByUsername(username)).thenReturn(Optional.of(new User()));
         when(authService.changePassword(username, oldPassword, newPassword)).thenReturn(false);
 
-        mockMvc.perform(put("/trainee/changeLogin")
+        mockMvc.perform(put("/changeLogin")
                         .principal(principal)
                         .contentType("application/json")
                         .content("{\"oldPassword\":\"" + oldPassword + "\",\"newPassword\":\"" + newPassword + "\"}"))
