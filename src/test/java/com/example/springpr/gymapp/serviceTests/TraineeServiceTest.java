@@ -147,4 +147,15 @@ class TraineeServiceTest {
         assertTrue(result.stream().anyMatch(dto -> dto.getUsername().equals("trainer1")));
         assertTrue(result.stream().anyMatch(dto -> dto.getUsername().equals("trainer2")));
     }
+
+    @Test
+    void testCountActiveTrainees() {
+        long activeTraineesCount = 5L;
+        when(traineeRepository.countByIsActive(true)).thenReturn(activeTraineesCount);
+
+        long result = traineeService.countActiveTrainees();
+
+        assertEquals(activeTraineesCount, result);
+        verify(traineeRepository, times(1)).countByIsActive(true);
+    }
 }

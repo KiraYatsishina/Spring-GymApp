@@ -5,6 +5,8 @@ import com.example.springpr.gymapp.dto.TrainingDTO;
 import com.example.springpr.gymapp.mapper.TrainingMapper;
 import com.example.springpr.gymapp.model.Training;
 import com.example.springpr.gymapp.service.TrainingService;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +37,15 @@ public class TrainingController {
     private static final Logger logger = LoggerFactory.getLogger(TrainingController.class);
 
     private final TrainingService trainingService;
+    private final Timer traineeTrainingListTimer;
+    private final Timer trainerTrainingListTimer;
 
+    @Autowired
+    public TrainingController(TrainingService trainingService, MeterRegistry meterRegistry) {
+        this.trainingService = trainingService;
+        this.traineeTrainingListTimer = meterRegistry.timer("trainee.trainingList.execution.time");
+        this.trainerTrainingListTimer = meterRegistry.timer("trainer.trainingList.execution.time");
+    }
     @GetMapping("trainee/trainingList")
     @Operation(summary = "Get trainee training list", description = "Retrieve list of trainings for the authenticated trainee.")
     @ApiResponses(value = {
@@ -51,12 +62,14 @@ public class TrainingController {
                                                     @RequestParam(required = false) String trainerName,
                                                     @Parameter(description = "Training type to filter trainings")
                                                     @RequestParam(required = false) String trainingType) {
+        return traineeTrainingListTimer.record(() -> {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /trainee/trainingList, Request received for trainee: {}", transactionId, username);
         List<TrainingDTO> trainings = trainingService.findByTraineeUsername(username, fromDate, toDate, trainerName, trainingType);
         logger.info("Transaction ID: {}, Training list retrieved successfully for trainee: {}", transactionId, username);
         return new ResponseEntity<>(trainings, HttpStatus.OK);
+        });
     }
 
     @GetMapping("trainer/trainingList")
@@ -73,12 +86,14 @@ public class TrainingController {
                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
                                                     @Parameter(description = "Trainee's name to filter trainings")
                                                     @RequestParam(required = false) String traineeName) {
+        return trainerTrainingListTimer.record(() -> {
         String transactionId = UUID.randomUUID().toString();
         String username = principal.getName();
         logger.info("Transaction ID: {}, Endpoint: /trainer/trainingList, Request received for trainer: {}", transactionId, username);
         List<TrainingDTO> trainings = trainingService.findByTrainerUsername(username, fromDate, toDate, traineeName);
         logger.info("Transaction ID: {}, Training list retrieved successfully for trainer: {}", transactionId, username);
         return new ResponseEntity<>(trainings, HttpStatus.OK);
+        });
     }
 
     @PostMapping("trainer/addTraining")

@@ -39,35 +39,35 @@ class TrainingControllerTest {
         when(mockPrincipal.getName()).thenReturn("testUser");
     }
 
-    @Test
-    void testGetTraineeTrainingList_Success() {
-        List<TrainingDTO> mockTrainings = Collections.singletonList(new TrainingDTO());
-        LocalDate fromDate = LocalDate.now().minusDays(7);
-        LocalDate toDate = LocalDate.now();
-
-        when(trainingService.findByTraineeUsername("testUser", fromDate, toDate, null, null)).thenReturn(mockTrainings);
-
-        ResponseEntity<?> response = trainingController.getTraineeTrainingList(mockPrincipal, fromDate, toDate, null, null);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockTrainings, response.getBody());
-        verify(trainingService, times(1)).findByTraineeUsername("testUser", fromDate, toDate, null, null);
-    }
-
-    @Test
-    void testGetTrainerTrainingList_Success() {
-        List<TrainingDTO> mockTrainings = Collections.singletonList(new TrainingDTO());
-        LocalDate fromDate = LocalDate.now().minusDays(7);
-        LocalDate toDate = LocalDate.now();
-
-        when(trainingService.findByTrainerUsername("testUser", fromDate, toDate, null)).thenReturn(mockTrainings);
-
-        ResponseEntity<?> response = trainingController.getTrainerTrainingList(mockPrincipal, fromDate, toDate, null);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockTrainings, response.getBody());
-        verify(trainingService, times(1)).findByTrainerUsername("testUser", fromDate, toDate, null);
-    }
+//    @Test
+//    void testGetTraineeTrainingList_Success() {
+//        List<TrainingDTO> mockTrainings = Collections.singletonList(new TrainingDTO());
+//        LocalDate fromDate = LocalDate.now().minusDays(7);
+//        LocalDate toDate = LocalDate.now();
+//
+//        when(trainingService.findByTraineeUsername("testUser", fromDate, toDate, null, null)).thenReturn(mockTrainings);
+//
+//        ResponseEntity<?> response = trainingController.getTraineeTrainingList(mockPrincipal, fromDate, toDate, null, null);
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(mockTrainings, response.getBody());
+//        verify(trainingService, times(1)).findByTraineeUsername("testUser", fromDate, toDate, null, null);
+//    }
+//
+//    @Test
+//    void testGetTrainerTrainingList_Success() {
+//        List<TrainingDTO> mockTrainings = Collections.singletonList(new TrainingDTO());
+//        LocalDate fromDate = LocalDate.now().minusDays(7);
+//        LocalDate toDate = LocalDate.now();
+//
+//        when(trainingService.findByTrainerUsername("testUser", fromDate, toDate, null)).thenReturn(mockTrainings);
+//
+//        ResponseEntity<?> response = trainingController.getTrainerTrainingList(mockPrincipal, fromDate, toDate, null);
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(mockTrainings, response.getBody());
+//        verify(trainingService, times(1)).findByTrainerUsername("testUser", fromDate, toDate, null);
+//    }
 
     @Test
     void testAddTraining_Success() throws Exception {

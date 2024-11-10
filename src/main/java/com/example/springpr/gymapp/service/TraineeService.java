@@ -83,4 +83,8 @@ public class TraineeService {
         return trainers.stream()
                 .map(TrainerMapper::toShortDTO).collect(Collectors.toList());
     }
+
+    public long countActiveTrainees() {
+        return traineeRepository.countByIsActive(true); // для этого метода
+    }
 }

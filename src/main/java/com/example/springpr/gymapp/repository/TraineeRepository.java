@@ -19,4 +19,6 @@ public interface TraineeRepository extends JpaRepository<Trainee, Long>{
 
     @Query("SELECT t FROM Trainer t WHERE t.username IN :usernames")
     List<Trainer> findByUsernameIn(List<String> usernames);
+
+    long countByIsActive(boolean isActive);
 }
