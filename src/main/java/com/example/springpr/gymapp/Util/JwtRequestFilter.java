@@ -1,5 +1,7 @@
 package com.example.springpr.gymapp.Util;
 
+import com.example.springpr.gymapp.model.Token;
+import com.example.springpr.gymapp.repository.TokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtCore jwtTokenUtils;
+    private final TokenRepository tokenRepository;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,6 +37,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authHeader.substring(7);
             try {
                 username = jwtTokenUtils.getUsername(jwt);
+
+                Token token = tokenRepository.findByToken(jwt)
+                        .orElseThrow(() -> new IllegalStateException("Token not found in database"));
+
+                if (token.isLoggedOut()) {
+                    log.warn("Token is logged out. Rejecting request.");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
             } catch (ExpiredJwtException e) {
                 log.debug("The token's lifetime is up");
             } catch (SignatureException e) {

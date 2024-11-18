@@ -8,7 +8,6 @@ import com.example.springpr.gymapp.model.Trainer;
 import com.example.springpr.gymapp.service.AuthService;
 import com.example.springpr.gymapp.service.TraineeService;
 import com.example.springpr.gymapp.service.TrainerService;
-import com.example.springpr.gymapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,7 +36,6 @@ public class AuthController{
     private final AuthService authService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
-    private final UserService userService;
 
 
     @PostMapping("/auth")

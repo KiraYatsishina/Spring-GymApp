@@ -3,10 +3,8 @@ package com.example.springpr.gymapp.service;
 import com.example.springpr.gymapp.Util.JwtCore;
 import com.example.springpr.gymapp.dto.UserDTO;
 import com.example.springpr.gymapp.mapper.UserMapper;
-import com.example.springpr.gymapp.model.Role;
-import com.example.springpr.gymapp.model.Trainee;
-import com.example.springpr.gymapp.model.Trainer;
-import com.example.springpr.gymapp.model.User;
+import com.example.springpr.gymapp.model.*;
+import com.example.springpr.gymapp.repository.TokenRepository;
 import com.example.springpr.gymapp.repository.TraineeRepository;
 import com.example.springpr.gymapp.repository.TrainerRepository;
 import com.example.springpr.gymapp.repository.UserRepository;
@@ -23,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -39,19 +38,50 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
+    private final LoginAttemptService loginAttemptService;
+    private final TokenRepository tokenRepository;
 
-    public ResponseEntity<String> createAuthToken(UserDTO authRequest) {
-        try {
-            logger.info("Attempting authentication for user: {}", authRequest.getUsername());
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            logger.warn("Failed login attempt for user: {}", authRequest.getUsername());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Неправильный логин или пароль");
+    public ResponseEntity<String> createAuthToken(UserDTO userCredentials) {
+        String username = userCredentials.getUsername();
+        if(loginAttemptService.isBlocked(username)){
+            return ResponseEntity.status(HttpStatus.LOCKED).
+                    body("User account is locked due to too many failed login attempts. Try again later.");
         }
-        UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-        String token = jwtTokenUtils.generateToken(userDetails);
-        logger.info("Authentication successful for user: {}. Token generated.", authRequest.getUsername());
-        return ResponseEntity.ok(token);
+
+        try {
+            logger.info("Attempting authentication for user: {}", username);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, userCredentials.getPassword()));
+        } catch (BadCredentialsException e) {
+            loginAttemptService.loginFailed(username);
+            logger.warn("Failed login attempt for user: {}", username);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid username or password.");
+        }
+        loginAttemptService.loginSucceeded(username);
+        UserDetails userDetails = userService.loadUserByUsername(username);
+        String jwt = jwtTokenUtils.generateToken(userDetails);
+
+        Optional<User> user = userRepository.findByUsername(username);
+        revokeAllByUser(user);
+        saveToken(user.get(), jwt);
+
+        logger.info("Authentication successful for user: {}. Token generated.", username);
+        return ResponseEntity.ok(jwt);
+    }
+
+    private void revokeAllByUser(Optional<User> user) {
+        List<Token> validTokenByUser = tokenRepository.findAllAccessTokensByUser(user.get().getUserId());
+        if(!validTokenByUser.isEmpty()){
+            validTokenByUser.forEach(token -> token.setLoggedOut(true));
+        }
+        tokenRepository.saveAll(validTokenByUser);
+    }
+
+    private void saveToken(User user, String jwt) {
+        Token token = new Token();
+        token.setToken(jwt);
+        token.setLoggedOut(false);
+        token.setUser(user);
+        tokenRepository.save(token);
     }
 
     public Optional<UserDTO> signUpTrainee(Trainee trainee) {

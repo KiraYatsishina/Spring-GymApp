@@ -5,10 +5,12 @@ import com.example.springpr.gymapp.dto.UserDTO;
 import com.example.springpr.gymapp.model.Trainee;
 import com.example.springpr.gymapp.model.Trainer;
 import com.example.springpr.gymapp.model.User;
+import com.example.springpr.gymapp.repository.TokenRepository;
 import com.example.springpr.gymapp.repository.TraineeRepository;
 import com.example.springpr.gymapp.repository.TrainerRepository;
 import com.example.springpr.gymapp.repository.UserRepository;
 import com.example.springpr.gymapp.service.AuthService;
+import com.example.springpr.gymapp.service.LoginAttemptService;
 import com.example.springpr.gymapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +49,10 @@ class AuthServiceTest {
     private TraineeRepository traineeRepository;
     @Mock
     private TrainerRepository trainerRepository;
-
+    @Mock
+    private LoginAttemptService loginAttemptService;
+    @Mock
+    private TokenRepository tokenRepository;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -62,6 +67,8 @@ class AuthServiceTest {
         UserDetails userDetails = mock(UserDetails.class);
         when(userService.loadUserByUsername(authRequest.getUsername())).thenReturn(userDetails);
         when(jwtTokenUtils.generateToken(userDetails)).thenReturn("jwtToken");
+        when(loginAttemptService.isBlocked("testUser")).thenReturn(false);
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(new User()));
 
         ResponseEntity<String> response = authService.createAuthToken(authRequest);
 
@@ -81,9 +88,26 @@ class AuthServiceTest {
         ResponseEntity<String> response = authService.createAuthToken(authRequest);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Неправильный логин или пароль", response.getBody());
+        assertEquals("Invalid username or password.", response.getBody());
     }
 
+    @Test
+    void testCreateAuthTokenFailedLockedUser(){
+        UserDTO authRequest = new UserDTO();
+        authRequest.setUsername("testUser");
+        authRequest.setPassword("wrongPassword");
+
+        when(loginAttemptService.isBlocked("testUser")).thenReturn(true);
+
+        ResponseEntity<String> response = authService.createAuthToken(authRequest);
+
+        assertEquals(HttpStatus.LOCKED, response.getStatusCode());
+        assertEquals("User account is locked due to too many failed login attempts. Try again later.",
+                response.getBody());
+        verify(loginAttemptService, times(1)).isBlocked("testUser");
+        verify(userRepository, never()).findByUsername(anyString());
+        verify(tokenRepository, never()).save(any());
+    }
     @Test
     void testSignUpTrainee() {
         Trainee trainee = new Trainee();

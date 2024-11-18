@@ -85,6 +85,6 @@ public class TraineeService {
     }
 
     public long countActiveTrainees() {
-        return traineeRepository.countByIsActive(true); // для этого метода
+        return traineeRepository.countByIsActive(true);
     }
 }
